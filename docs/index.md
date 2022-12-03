@@ -1,8 +1,8 @@
-# morphology-dataset
+# neuromorpho-data
 
-[![Release](https://img.shields.io/github/v/release/kpeez/morphology-dataset)](https://img.shields.io/github/v/release/kpeez/morphology-dataset)
-[![Build status](https://img.shields.io/github/workflow/status/kpeez/morphology-dataset/merge-to-main)](https://img.shields.io/github/workflow/status/kpeez/morphology-dataset/merge-to-main)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/kpeez/morphology-dataset)](https://img.shields.io/github/commit-activity/m/kpeez/morphology-dataset)
-[![License](https://img.shields.io/github/license/kpeez/morphology-dataset)](https://img.shields.io/github/license/kpeez/morphology-dataset)
+[![Release](https://img.shields.io/github/v/release/kpeez/neuromorpho-data)](https://img.shields.io/github/v/release/kpeez/neuromorpho-data)
+[![Build status](https://img.shields.io/github/workflow/status/kpeez/neuromorpho-data/merge-to-main)](https://img.shields.io/github/workflow/status/kpeez/neuromorpho-data/merge-to-main)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/kpeez/neuromorpho-data)](https://img.shields.io/github/commit-activity/m/kpeez/neuromorpho-data)
+[![License](https://img.shields.io/github/license/kpeez/neuromorpho-data)](https://img.shields.io/github/license/kpeez/neuromorpho-data)
 
-Create dataset of neuron morphologies.
+Tools for using the API to access the [NeuroMorpho morphology database](https://neuromorpho.org/).
