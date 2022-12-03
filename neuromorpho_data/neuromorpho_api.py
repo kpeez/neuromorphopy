@@ -2,6 +2,7 @@
 import contextlib
 import io
 import re
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -80,7 +81,7 @@ def request_url_get(url: str) -> requests.models.Response:
     return page
 
 
-def request_url_post(query: dict[str, str], **kwargs) -> requests.models.Response:
+def request_url_post(query: dict[str, str], **kwargs: Any) -> requests.models.Response:
     """
     Send POST request for URL.
 
@@ -95,7 +96,13 @@ def request_url_post(query: dict[str, str], **kwargs) -> requests.models.Respons
     url = f"{NEUROMORPHO_API}/neuron/select/"
     headers = {"Content-Type": "application/json"}
 
-    page = requests.post(url, json=query, headers=headers, verify=False, **kwargs)
+    page = requests.post(
+        url,
+        json=query,
+        headers=headers,
+        verify=False,
+        **kwargs,
+    )
     _check_response_validity(page)
 
     return page
@@ -103,7 +110,6 @@ def request_url_post(query: dict[str, str], **kwargs) -> requests.models.Respons
 
 def _get_swc_url(neuron_name: str) -> str:
     """Get URL for a neuron's swc data from NeuroMorpho archives."""
-    # neuron_url = f"{NEURON_INFO}{neuron['neuron_name']}"
     neuron_url = f"{NEURON_INFO}{neuron_name}"
     neuron_page = request_url_get(neuron_url)
 
@@ -128,21 +134,22 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
     response_list = response_text.readlines()
     num_lines = next(idx for idx, line in enumerate(response_list) if "#" not in line)
 
-    colnames = ["id", "type", "x", "y", "z", "radius", "parent"]
     raw_swc_data = pd.DataFrame(response_list[num_lines:])
     swc_data = raw_swc_data[0].str.replace("\r\n", "").str.split(expand=True)
-    swc_data.columns = colnames
+    col_names = dict(zip(swc_data.columns, ["id", "type", "x", "y", "z", "radius", "parent"]))
+    swc_data.rename(columns=col_names, inplace=True)
     # set dtypes
-    col_dtypes = {
-        "id": int,
-        "type": int,
-        "x": float,
-        "y": float,
-        "z": float,
-        "radius": float,
-        "parent": int,
-    }
-    swc_data = swc_data.astype(col_dtypes)
+    swc_data = swc_data.astype(
+        {
+            "id": int,
+            "type": int,
+            "x": float,
+            "y": float,
+            "z": float,
+            "radius": float,
+            "parent": int,
+        }
+    )
 
     return swc_data
 
