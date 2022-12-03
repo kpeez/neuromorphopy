@@ -1,0 +1,30 @@
+site_name: morphology-dataset
+repo_url: https://github.com/kpeez/morphology-dataset
+site_url: https://kpeez.github.io/morphology-dataset
+site_description: Create dataset of neuron morphologies.
+site_author: Kyle Puhger
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+            setup_commands:
+                - import sys
+                - sys.path.append('../')
+copyright: Maintained by Kyle Puhger.
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    primary: white
+    accent: blue
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
