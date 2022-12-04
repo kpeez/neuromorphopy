@@ -5,4 +5,4 @@
 [![Commit activity](https://img.shields.io/github/commit-activity/m/kpeez/neuromorpho-data)](https://img.shields.io/github/commit-activity/m/kpeez/neuromorpho-data)
 [![License](https://img.shields.io/github/license/kpeez/neuromorpho-data)](https://img.shields.io/github/license/kpeez/neuromorpho-data)
 
-Tools for using the API to access the [NeuroMorpho morphology database](https://neuromorpho.org/).
+Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
