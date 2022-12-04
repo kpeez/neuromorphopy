@@ -7,6 +7,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import requests
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3.util import ssl_
 
 # globals
 NEUROMORPHO = "https://neuromorpho.org"
@@ -22,13 +25,12 @@ def add_dh_cipher_set() -> None:
     See:
     https://stackoverflow.com/questions/38015537/python-requests-exceptions-sslerror-dh-key-too-small
     """
-    requests.packages.urllib3.disable_warnings(
-        requests.packages.urllib3.exceptions.InsecureRequestWarning
-    )
-    requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += "HIGH:!DH:!aNULL"
-
+    disable_warnings(InsecureRequestWarning)
+    ssl_.DEFAULT_CIPHERS += "HIGH:!DH:!aNULL"
     with contextlib.suppress(AttributeError):
-        requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += "HIGH:!DH:!aNULL"
+        requests.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += (  # type:ignore
+            "HIGH:!DH:!aNULL"
+        )
 
 
 def _check_response_validity(page: requests.models.Response) -> None:
