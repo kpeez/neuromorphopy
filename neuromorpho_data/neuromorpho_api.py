@@ -87,7 +87,7 @@ def request_url_get(url: str) -> requests.models.Response:
     return page
 
 
-def request_url_post(query: dict[str, str], **kwargs: Any) -> requests.models.Response:
+def request_url_post(query: dict[str, list[str]], **kwargs: Any) -> requests.models.Response:
     """
     Send POST request for URL.
 
@@ -124,7 +124,7 @@ def get_query_values(field: str) -> set[str]:
     return set(request_url_get(f"{NEUROMORPHO_API}/neuron/fields/{field}").json()["fields"])
 
 
-def validate_search(query: dict[str, str]) -> None:
+def validate_search(query: dict[str, list[str]]) -> None:
     """Validate search query to ensure field and its items are acceptable."""
     query_fields = get_query_fields()
     print("Validating search query...")
@@ -155,7 +155,9 @@ class NeuroMorpho:
     Attributes:
         valid_field_names (set): Set containing the valid field names to use for a query.
         neuron_list (list): List of neuron metadata in json
+        neuron_metadata(pd.DataFrame): Results of search query.
         swc_data (dict): dict of neuron_name and its swc data
+
 
     """
 
@@ -180,7 +182,7 @@ class NeuroMorpho:
         """
         return get_query_values(field)
 
-    def get_neuron_metadata(self, query: dict[str, str]) -> pd.DataFrame:
+    def get_neuron_metadata(self, query: dict[str, list[str]]) -> None:
         """
         Get list of neurons from a search query.
 
@@ -188,9 +190,6 @@ class NeuroMorpho:
 
         Args:
             query (dict[str, str]): query values to filter neurons
-
-        Returns:
-            list[dict]: list of dicts where each dict is a single neuron's metadata.
         """
         validate_search(query)
         print("Beginning search...")
@@ -204,10 +203,8 @@ class NeuroMorpho:
             page = request_url_post(query, params={"size": neuron_count, "page": page_idx})
             neuron_list.extend(page.json()["_embedded"]["neuronResources"])
 
-        self.neuron_list = neuron_list
+        self._neuron_list = neuron_list
         self.neuron_metadata = pd.DataFrame(neuron_list)
-
-        return self.neuron_metadata
 
     def get_neuron_swc(self, neuron_name: str) -> pd.DataFrame:
         """
@@ -255,23 +252,23 @@ class NeuroMorpho:
             with contextlib.suppress(ValueError):
                 self.swc_data[neuron] = self.get_neuron_swc(neuron_name=neuron)
 
-    def export_metadata(self, data_path: str, query_name: str) -> None:
+    def export_metadata(self, export_path: str, query_filename: str) -> None:
         """
         Export metadata as csv.
 
         Args:
-            data_path (str): export path
-            query_name (str): name of metadata file
+            export_path (str): export path
+            query_filename (str): name of metadata file
         """
-        self.neuron_metadata.to_csv(f"{Path(data_path)}/{query_name}.csv", index=False)
+        self.neuron_metadata.to_csv(f"{Path(export_path)}/{query_filename}.csv", index=False)
 
-    def export_swc_data(self, data_path: str, swc_filename: str) -> None:
+    def export_swc_data(self, export_path: str, swc_filename: str) -> None:
         """
         Export dict of swc data to pkl file.
 
         Args:
-            data_path (str): export path
+            export_path (str): export path
             swc_filename (str): name of pkl file
         """
-        with open(f"{Path(data_path)}/{swc_filename}.pkl", "wb") as f:
+        with open(f"{Path(export_path)}/{swc_filename}.pkl", "wb") as f:
             pickle.dump(self.swc_data, f, protocol=-1)
