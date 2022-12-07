@@ -155,13 +155,13 @@ class NeuroMorpho:
     Attributes:
         valid_field_names (set): Set containing the valid field names to use for a query.
         neuron_list (list): List of neuron metadata in json
+        swc_data (dict): dict of neuron_name and its swc data
 
     """
 
     def __init__(self) -> None:
         if check_api_status():
             self.valid_field_names: set[str] = get_query_fields()
-            # self.neuron_list: list[dict[str, Any]] = []
             self.neuron_metadata: pd.DataFrame = pd.DataFrame()
             self.swc_data: dict[str, pd.DataFrame] = {}
 
