@@ -154,7 +154,6 @@ class NeuroMorpho:
 
     Attributes:
         valid_field_names (set): Set containing the valid field names to use for a query.
-        neuron_list (list): List of neuron metadata in json
         neuron_metadata(pd.DataFrame): Results of search query.
         swc_data (dict): dict of neuron_name and its swc data
 
