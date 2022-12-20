@@ -32,7 +32,7 @@ flake8-unused-arguments = "^0.0.11"
 mypy = "^0.981"
 pre-commit = "^2.20.0"
 types-requests = "^2.28.11.5"
-pandas-stubs = "^1.5.2.221124"
+pandas-stubs = "^1.5.2.221213"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.0"
@@ -49,7 +49,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 100
 include = '\.pyi?$'
-target-version = ['py39']
+target-version = ['py310']
 fast = true
 exclude = '''
 (
@@ -70,12 +70,14 @@ skip = ["neuromorpho-data",".venv"]
 
 [tool.mypy]
 files = ["neuromorpho_data"]
-disallow_untyped_defs = "True"
-disallow_any_unimported = "True"
-no_implicit_optional = "True"
-check_untyped_defs = "True"
-warn_return_any = "True"
-warn_unused_ignores = "True"
-show_error_codes = "True"
-
-
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+exclude = [
+    '\.venv',
+    'tests'
+]

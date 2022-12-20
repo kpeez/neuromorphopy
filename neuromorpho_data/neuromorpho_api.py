@@ -6,7 +6,7 @@ import io
 import pickle
 import re
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, no_type_check
 
 import numpy as np
 import pandas as pd
@@ -15,6 +15,11 @@ from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util import ssl_
 
+if TYPE_CHECKING:
+    from typing import Any
+
+    from requests.models import Response
+
 # globals
 NEUROMORPHO = "https://neuromorpho.org"
 NEUROMORPHO_API = "https://neuromorpho.org/api"
@@ -22,6 +27,7 @@ NEURON_INFO = f"{NEUROMORPHO}/neuron_info.jsp?neuron_name="
 MAX_NEURONS = 500
 
 
+@no_type_check
 def add_dh_cipher_set() -> None:
     """
     Update SSL cipher list to ignore DH KEY TOO SMALL error.
@@ -32,12 +38,10 @@ def add_dh_cipher_set() -> None:
     disable_warnings(InsecureRequestWarning)
     ssl_.DEFAULT_CIPHERS += "HIGH:!DH:!aNULL"
     with contextlib.suppress(AttributeError):
-        requests.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += (  # type:ignore
-            "HIGH:!DH:!aNULL"
-        )
+        requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += "HIGH:!DH:!aNULL"
 
 
-def _check_response_validity(page: requests.models.Response) -> None:
+def _check_response_validity(page: Response) -> None:
     """Ensure we have a valid response."""
     bad_status = {
         400: "400 error: Bad request, usually wrong parameters to select queries.",
@@ -70,7 +74,7 @@ def check_api_status() -> bool:
     return status
 
 
-def request_url_get(url: str) -> requests.models.Response:
+def request_url_get(url: str) -> Response:
     """
     Send GET request for a URL.
 
@@ -78,7 +82,7 @@ def request_url_get(url: str) -> requests.models.Response:
         url (str): Link to request.
 
     Returns:
-        requests.models.Response
+        Response
     """
     add_dh_cipher_set()
     page = requests.get(url, verify=False)
@@ -87,7 +91,10 @@ def request_url_get(url: str) -> requests.models.Response:
     return page
 
 
-def request_url_post(query: dict[str, list[str]], **kwargs: Any) -> requests.models.Response:
+def request_url_post(
+    query: dict[str, list[str]],
+    **kwargs: Any,
+) -> Response:
     """
     Send POST request for URL.
 
@@ -96,7 +103,7 @@ def request_url_post(query: dict[str, list[str]], **kwargs: Any) -> requests.mod
         query (dict[str, str]): Search criteria to filter request by.
 
     Returns:
-        requests.models.Response
+        Response
     """
     add_dh_cipher_set()
     url = f"{NEUROMORPHO_API}/neuron/select/"
