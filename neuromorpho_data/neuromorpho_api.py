@@ -148,6 +148,16 @@ def _get_swc_url(neuron_name: str) -> str:
     return f"{NEUROMORPHO}/{match}"
 
 
+def validate_swc_data(swc_data: pd.DataFrame) -> None:
+    """Ensure swc data is valid."""
+    if -1 not in swc_data["parent"].unique():
+        raise ValueError("SWC data does not contain a root node.")
+
+    if 1 not in swc_data["type"].unique():
+        print("SWC data does not contain a soma. Setting root node to type = 1 (soma).")
+        swc_data.loc[0, "type"] = 1
+
+
 class NeuroMorpho:
     """
     Access NeuroMorpho API to get neuron reconstructions.
@@ -236,6 +246,7 @@ class NeuroMorpho:
                 "parent": int,
             }
         )
+        validate_swc_data(swc_data)
 
         return swc_data
 
