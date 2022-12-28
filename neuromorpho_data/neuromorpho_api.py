@@ -6,7 +6,7 @@ import io
 import pickle
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, no_type_check
+from typing import Any, no_type_check
 
 import numpy as np
 import pandas as pd
@@ -14,11 +14,6 @@ import requests
 from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util import ssl_
-
-if TYPE_CHECKING:
-    from typing import Any
-
-    from requests.models import Response
 
 # globals
 NEUROMORPHO = "https://neuromorpho.org"
@@ -41,7 +36,7 @@ def add_dh_cipher_set() -> None:
         requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += "HIGH:!DH:!aNULL"
 
 
-def _check_response_validity(page: Response) -> None:
+def _check_response_validity(page: requests.Response) -> None:
     """Ensure we have a valid response."""
     bad_status = {
         400: "400 error: Bad request, usually wrong parameters to select queries.",
@@ -74,7 +69,7 @@ def check_api_status() -> bool:
     return status
 
 
-def request_url_get(url: str) -> Response:
+def request_url_get(url: str) -> requests.Response:
     """
     Send GET request for a URL.
 
@@ -94,7 +89,7 @@ def request_url_get(url: str) -> Response:
 def request_url_post(
     query: dict[str, list[str]],
     **kwargs: Any,
-) -> Response:
+) -> requests.Response:
     """
     Send POST request for URL.
 
