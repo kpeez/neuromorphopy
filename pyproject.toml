@@ -81,3 +81,9 @@ exclude = [
     '\.venv',
     'tests'
 ]
+
+[[tool.mypy.overrides]]
+module = [
+"neuromorpho_api"
+]
+ignore_missing_imports = true
