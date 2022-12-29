@@ -160,6 +160,23 @@ def validate_swc_data(swc_data: pd.DataFrame) -> None:
         swc_data.loc[0, "type"] = 1
 
 
+def get_image_url(neuron_name: str) -> str:
+    """
+    Get image url for neuron.
+
+    Args:
+        neuron_name (str): name of neuron
+
+    Returns:
+        str: image url
+    """
+    neuron_page = request_url_get(f"{NEURON_INFO}{neuron_name}")
+    pattern = re.compile(r"./images/imageFiles/[^/]*/[^/]*\.png")
+    match = re.findall(pattern, neuron_page.text)
+
+    return f"{NEUROMORPHO}{match[0]}"
+
+
 class NeuroMorpho:
     """
     Access NeuroMorpho API to get neuron reconstructions.
