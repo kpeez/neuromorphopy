@@ -1,21 +1,21 @@
-# NeuroMorpho Data
+# NeuroMorphopy
 
-[![codecov](https://codecov.io/gh/kpeez/neuromorpho-data/branch/main/graph/badge.svg)](https://codecov.io/gh/kpeez/neuromorpho-data)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/kpeez/neuromorpho-data)](https://img.shields.io/github/commit-activity/m/kpeez/neuromorpho-data)
-[![License](https://img.shields.io/github/license/kpeez/neuromorpho-data)](https://img.shields.io/github/license/kpeez/neuromorpho-data)
+[![codecov](https://codecov.io/gh/kpeez/neuromorphopy/branch/main/graph/badge.svg)](https://codecov.io/gh/kpeez/neuromorphopy)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/kpeez/neuromorphopy)](https://img.shields.io/github/commit-activity/m/kpeez/neuromorphopy)
+[![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
 
 Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
 
-- **Github repository**: <https://github.com/kpeez/neuromorpho-data/>
-- **Documentation** <https://kpeez.github.io/neuromorpho-data/>
+- **Github repository**: <https://github.com/kpeez/neuromorphopy/>
+- **Documentation** <https://kpeez.github.io/neuromorphopy/>
 
 ## Installation
 
 If using `poetry`, simply clone the repo and install
 
 ```bash
-git clone https://github.com/kpeez/neuromorpho-data.git
-cd neuromorpho-data
+git clone https://github.com/kpeez/neuromorphopy.git
+cd neuromorphopy
 make install
 ```
 
@@ -24,7 +24,7 @@ make install
 First, import and create a NeuroMorpho object:
 
 ```python
-from neuromorpho_data.neuromorpho_api import NeuroMorpho
+from neuromorphopy.neuromorpho_api import NeuroMorpho
 
 nm = NeuroMorpho()
 ```

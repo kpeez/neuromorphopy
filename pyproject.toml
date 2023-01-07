@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "neuromorpho_data"
+name = "neuromorphopy"
 version = "0.0.1"
 description = "Lightweight python package for downloading neuron morphologies from the NeuroMorpho archives."
 authors = ["Kyle Puhger <fkrpuhger@gmail.com>"]
-repository = "https://github.com/kpeez/neuromorpho-data"
-documentation = "https://kpeez.github.io/neuromorpho-data/"
+repository = "https://github.com/kpeez/neuromorphopy"
+documentation = "https://kpeez.github.io/neuromorphopy/"
 readme = "README.md"
 packages = [
-  {include = "neuromorpho_data"}
+  {include = "neuromorphopy"}
 ]
 
 [tool.poetry.dependencies]
@@ -62,10 +62,10 @@ exclude = '''
 
 [tool.isort]
 profile = "black"
-skip = ["neuromorpho-data",".venv"]
+skip = ["neuromorphopy",".venv"]
 
 [tool.mypy]
-files = ["neuromorpho_data"]
+files = ["neuromorphopy"]
 plugins = "numpy.typing.mypy_plugin"
 disallow_untyped_defs = true
 disallow_any_unimported = true
