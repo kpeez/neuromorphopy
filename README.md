@@ -38,6 +38,9 @@ neuromorph.valid_field_names
 ### Getting neuron metadata from NeuroMorpho
 
 To search the NeuroMorpho archives, construct a search query and run `get_neuron_metadata`.
+
+The query can be explicitly written, or loaded from a json file using `nm.load_json_query(path_to_query_file)`
+
 For example, to get all of the mouse interneurons and pyramidal cells from hippocampus and neocortex, you would use the following:
 
 ```python
