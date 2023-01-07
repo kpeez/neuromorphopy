@@ -160,6 +160,28 @@ def validate_swc_data(swc_data: pd.DataFrame) -> None:
         swc_data.loc[0, "type"] = 1
 
 
+def download_swc_data(neuron_list: list[str]) -> dict[str, pd.DataFrame]:
+    """
+    Look up neuron name and retrieve swc data from NeuroMorpho.
+
+    Args:
+        neuron_list (list[str]): List of neuron names to retrieve swc data for.
+
+    Returns:
+        dict[str, pd.DataFrame]: Dictionary of neuron names and swc data.
+    """
+    print(f"Downloading swc data for {len(neuron_list)} neurons...")
+
+    swc_data = {}
+    for n, neuron in enumerate(neuron_list):
+        if n % 100 == 0:
+            print(f"loading neuron: {n}")
+        with contextlib.suppress(ValueError):
+            swc_data[neuron] = NeuroMorpho().get_neuron_swc(neuron_name=neuron)
+
+    return swc_data
+
+
 def get_image_url(neuron_name: str) -> str:
     """
     Get image url for neuron.
@@ -234,7 +256,8 @@ class NeuroMorpho:
         self._neuron_list = neuron_list
         self.neuron_metadata = pd.DataFrame(neuron_list)
 
-    def get_neuron_swc(self, neuron_name: str) -> pd.DataFrame:
+    @staticmethod
+    def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
         """
         Create DataFrame of swc data for neuron using neuron_name.
 
@@ -269,17 +292,19 @@ class NeuroMorpho:
 
         return swc_data
 
-    def download_swc_data(self) -> None:
+    def download_query_swc(self) -> None:
         """Look up neuron name and retrieve swc data from NeuroMorpho."""
         assert self.neuron_metadata.empty is False, "No metadata!"
 
         print(f"Downloading swc data for {len(self.neuron_metadata['neuron_name'])} neurons...")
 
-        for n, neuron in enumerate(self.neuron_metadata["neuron_name"]):
-            if n % 100 == 0:
-                print(f"loading neuron: {n}")
-            with contextlib.suppress(ValueError):
-                self.swc_data[neuron] = self.get_neuron_swc(neuron_name=neuron)
+        # for n, neuron in enumerate(self.neuron_metadata["neuron_name"]):
+        #     if n % 100 == 0:
+        #         print(f"loading neuron: {n}")
+        #     with contextlib.suppress(ValueError):
+        #         self.swc_data[neuron] = self.get_neuron_swc(neuron_name=neuron)
+
+        self.swc_data = download_swc_data(self.neuron_metadata["neuron_name"].to_list())
 
     def export_metadata(self, export_path: str, query_filename: str) -> None:
         """
