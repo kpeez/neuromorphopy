@@ -24,15 +24,15 @@ make install
 First, import and create a NeuroMorpho object:
 
 ```python
-from neuromorphopy.neuromorpho_api import NeuroMorpho
+import neuromorphopy as nm
 
-nm = NeuroMorpho()
+neuromorph = nm.NeuroMorpho()
 ```
 
 To see a list of valid search fields you can access the `valid_field_names` attribute:
 
 ```python
-nm.valid_field_names
+neuromorph.valid_field_names
 ```
 
 ### Getting neuron metadata from NeuroMorpho
@@ -44,9 +44,10 @@ For example, to get all of the mouse interneurons and pyramidal cells from hippo
 query = {
     "species": ["mouse"],
     "brain_region": ["neocortex", "hippocampus"],
-    "cell_type": ["interneuron", "pyramidal"]
+    "cell_type": ["interneuron", "pyramidal"],
+    "experiment_condition": ["Control"]
 }
-nm.get_neuron_metadata(query)
+neuromorph.get_neuron_metadata(query)
 ```
 
 Note: this may take some time if you are request a large set of neurons.
@@ -55,7 +56,7 @@ For example, the above query takes ~3 mins to get info for ~26,000 neurons.
 The results of the search can be viewed by accessing the `neuron_metadata` attribute:
 
 ```python
-metadata = nm.neuron_metadata
+metadata = neuromorph.neuron_metadata
 ```
 
 ### Downloading morphology data
@@ -63,13 +64,13 @@ metadata = nm.neuron_metadata
 Morphology data for a single neuron (in .swc format) can be obtained by passing in the `neuron_name`:
 
 ```python
-nm.get_neuron_swc(neuron_name)
+neuromorph.get_neuron_swc(neuron_name)
 ```
 
 In order to get morphological reconstructions for every neuron in the query, use `get_neuron_swc`:
 
 ```python
-nm.download_query_swc()
+neuromorph.download_query_swc()
 ```
 
 Note: this takes a ***long time*** for large groups of neurons. The above query takes ~7 hours to complete.
@@ -77,7 +78,7 @@ Note: this takes a ***long time*** for large groups of neurons. The above query 
 Once completed you can access a dictionary of {neuron_name: swc_data}:
 
 ```python
-nm.swc_data
+neuromorph.swc_data
 ```
 
 ### Exporting data
@@ -85,11 +86,11 @@ nm.swc_data
 The metadata from your query can be exported to a .csv file by providing an export path and a file name:
 
 ```python
-nm.export_metadata(export_path, query_filename)
+neuromorph.export_metadata(export_path, query_filename)
 ```
 
 After downloading swc data you can export that as a .pkl file the same way:
 
 ```python
-nm.export_swc_data(export_path, swc_filename)
+neuromorph.export_swc_data(export_path, swc_filename)
 ```
