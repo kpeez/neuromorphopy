@@ -21,7 +21,7 @@ def get_query_values(field: str) -> set[str]:
     return set(request_url_get(f"{NEUROMORPHO_API}/neuron/fields/{field}").json()["fields"])
 
 
-def validate_search(query: dict[str, list[str]]) -> None:
+def validate_query(query: dict[str, list[str]]) -> None:
     """Validate search query to ensure field and its items are acceptable."""
     query_fields = get_query_fields()
     print("Validating search query...")
@@ -76,7 +76,7 @@ class NeuroMorpho:
         Args:
             query (dict[str, str]): query values to filter neurons
         """
-        validate_search(query)
+        validate_query(query)
         print("Beginning search...")
         # use an initial request to get query info
         total_neurons = request_url_post(query).json()["page"]["totalElements"]
