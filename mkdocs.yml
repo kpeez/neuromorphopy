@@ -1,6 +1,6 @@
-site_name: neuromorpho-data
-repo_url: https://github.com/kpeez/neuromorpho-data
-site_url: https://kpeez.github.io/neuromorpho-data
+site_name: neuromorphopy
+repo_url: https://github.com/kpeez/neuromorphopy
+site_url: https://kpeez.github.io/neuromorphopy
 site_description: Lightweight python package for downloading neuron morphologies from the NeuroMorpho archive.
 site_author: Kyle Puhger
 

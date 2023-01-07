@@ -1,1 +1,1 @@
-::: neuromorpho_data
+::: neuromorphopy
