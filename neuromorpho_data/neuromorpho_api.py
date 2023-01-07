@@ -160,12 +160,12 @@ def validate_swc_data(swc_data: pd.DataFrame) -> None:
         swc_data.loc[0, "type"] = 1
 
 
-def download_swc_data(neuron_list: list[str]) -> dict[str, pd.DataFrame]:
+def download_swc_data(neuron_list: list[str] | pd.Series[str]) -> dict[str, pd.DataFrame]:
     """
     Look up neuron name and retrieve swc data from NeuroMorpho.
 
     Args:
-        neuron_list (list[str]): List of neuron names to retrieve swc data for.
+        neuron_list (list[str] | pd.Series[str]): List of neuron names to retrieve swc data for.
 
     Returns:
         dict[str, pd.DataFrame]: Dictionary of neuron names and swc data.
@@ -304,7 +304,7 @@ class NeuroMorpho:
         #     with contextlib.suppress(ValueError):
         #         self.swc_data[neuron] = self.get_neuron_swc(neuron_name=neuron)
 
-        self.swc_data = download_swc_data(self.neuron_metadata["neuron_name"].to_list())
+        self.swc_data = download_swc_data(self.neuron_metadata["neuron_name"])
 
     def export_metadata(self, export_path: str, query_filename: str) -> None:
         """
