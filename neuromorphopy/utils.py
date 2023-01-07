@@ -1,10 +1,10 @@
 """Utilities for NeuroMorpho API."""
 from __future__ import annotations
-
+import json
 import contextlib
 import re
 from typing import Any, no_type_check
-
+from pathlib import Path
 import requests
 from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
@@ -125,3 +125,20 @@ def get_image_url(neuron_name: str) -> str:
     match = re.findall(pattern, neuron_page.text)
 
     return f"{NEUROMORPHO}{match[0]}"
+
+
+def load_json_query(query_file: str | Path) -> dict[str, list[str]]:
+    """
+    Load json query file.
+
+    Args:
+        query_file (str): Path to json query file.
+
+    Returns:
+        dict[str, list[str]]: Query dictionary.
+    """
+    with open(query_file, "r") as file:
+        # Load the JSON data from the file
+        query: dict[str, list[str]] = json.load(file)
+
+    return query
