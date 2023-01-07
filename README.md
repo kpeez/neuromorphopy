@@ -50,6 +50,10 @@ query = {
     "cell_type": ["interneuron", "pyramidal"],
     "experiment_condition": ["Control"]
 }
+
+# alternatively
+query = nm.load_json_query(path_to_query_file)
+
 neuromorph.get_neuron_metadata(query)
 ```
 
