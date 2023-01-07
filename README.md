@@ -69,7 +69,7 @@ nm.get_neuron_swc(neuron_name)
 In order to get morphological reconstructions for every neuron in the query, use `get_neuron_swc`:
 
 ```python
-nm.download_swc_data()
+nm.download_query_swc()
 ```
 
 Note: this takes a ***long time*** for large groups of neurons. The above query takes ~7 hours to complete.
