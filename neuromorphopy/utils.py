@@ -1,5 +1,6 @@
 """Utilities for NeuroMorpho API."""
 from __future__ import annotations
+import pandas as pd
 import json
 import contextlib
 import re
@@ -142,3 +143,32 @@ def load_json_query(query_file: str | Path) -> dict[str, list[str]]:
         query: dict[str, list[str]] = json.load(file)
 
     return query
+
+
+def clean_str_column(col: pd.Series) -> pd.Series:
+    """Clean a str column from DataFrame."""
+    return (
+        col.str.lstrip("[")
+        .str.rstrip("]")
+        .str.replace("'", "")
+        .str.replace(", ", "_")
+        .str.replace("layer ", "layer")
+        .str.replace(" ", "_")
+        .str.lower()
+    )
+
+
+def clean_metadata_columns(metadata: pd.DataFrame) -> pd.DataFrame:
+    """
+    Clean columns of dataframe.
+
+    Args:
+        metadata (pd.DataFrame): Dataframe to clean.
+
+    Returns:
+        pd.DataFrame: metadata with cleaned columns.
+    """
+    for col in metadata.columns:
+        if metadata[col].dtype == "object":
+            metadata[col] = clean_str_column(metadata[col].astype(str))
+    return metadata

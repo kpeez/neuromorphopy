@@ -5,7 +5,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from neuromorphopy.swc import download_swc_data, get_neuron_swc
-from neuromorphopy.utils import check_api_status, request_url_get, request_url_post, NEUROMORPHO_API
+from neuromorphopy.utils import (
+    check_api_status,
+    request_url_get,
+    request_url_post,
+    clean_metadata_columns,
+    NEUROMORPHO_API,
+)
 
 
 MAX_NEURONS = 500
@@ -90,6 +96,7 @@ class NeuroMorpho:
 
         self._neuron_list = neuron_list
         self.neuron_metadata = pd.DataFrame(neuron_list)
+        self.neuron_metadata = clean_metadata_columns(self.neuron_metadata)
 
     @staticmethod
     def neuron_swc_data(neuron_name: str) -> pd.DataFrame:
