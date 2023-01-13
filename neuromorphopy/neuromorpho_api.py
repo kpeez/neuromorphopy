@@ -52,11 +52,14 @@ class NeuroMorpho:
 
     """
 
-    def __init__(self) -> None:
+    def __init__(self, query: dict[str, list[str]] | None = None) -> None:
         if check_api_status():
             self.valid_field_names: set[str] = get_query_fields()
             self.neuron_metadata: pd.DataFrame = pd.DataFrame()
             self.swc_data: dict[str, pd.DataFrame] = {}
+
+            if query:
+                self.search_archives(query)
 
         else:
             raise ConnectionError("The NeuroMorpho API is currently down.")
@@ -73,7 +76,8 @@ class NeuroMorpho:
         """
         return get_query_values(field)
 
-    def get_neuron_metadata(self, query: dict[str, list[str]]) -> None:
+    @staticmethod
+    def get_neuron_metadata(query: dict[str, list[str]]) -> pd.DataFrame:
         """
         Get list of neurons from a search query.
 
@@ -88,15 +92,24 @@ class NeuroMorpho:
         total_neurons = request_url_post(query).json()["page"]["totalElements"]
         num_pages = np.ceil(total_neurons / MAX_NEURONS).astype(int)
 
-        neuron_list = []
+        neuron_list = []  # list of neuron metadata dicts
         for page_idx in range(num_pages):
             neuron_count = MAX_NEURONS
             page = request_url_post(query, params={"size": neuron_count, "page": page_idx})
             neuron_list.extend(page.json()["_embedded"]["neuronResources"])
 
-        self._neuron_list = neuron_list
-        self.neuron_metadata = pd.DataFrame(neuron_list)
-        self.neuron_metadata = clean_metadata_columns(self.neuron_metadata)
+        metadata = pd.DataFrame(neuron_list)
+
+        return clean_metadata_columns(metadata)
+
+    def search_archives(self, query: dict[str, list[str]]) -> None:
+        """
+        Search NeuroMorpho archives.
+
+        Args:
+            query (dict[str, str]): query values to filter neurons
+        """
+        self.neuron_metadata = self.get_neuron_metadata(query)
 
     @staticmethod
     def neuron_swc_data(neuron_name: str) -> pd.DataFrame:

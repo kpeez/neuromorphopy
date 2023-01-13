@@ -37,7 +37,7 @@ neuromorph.valid_field_names
 
 ### Getting neuron metadata from NeuroMorpho
 
-To search the NeuroMorpho archives, construct a search query and run `get_neuron_metadata`.
+To search the NeuroMorpho archives, construct a search query and run `search_archives(query)`.
 
 The query can be explicitly written, or loaded from a json file using `nm.load_json_query(path_to_query_file)`
 
@@ -54,7 +54,7 @@ query = {
 # alternatively
 query = nm.load_json_query(path_to_query_file)
 
-neuromorph.get_neuron_metadata(query)
+neuromorph.search_archives(query)
 ```
 
 Note: this may take some time if you are request a large set of neurons.
@@ -64,6 +64,12 @@ The results of the search can be viewed by accessing the `neuron_metadata` attri
 
 ```python
 metadata = neuromorph.neuron_metadata
+```
+
+If you already have a search query, you can pass in the query dictionary at initialization to automatically get the metadata:
+
+```python
+neuromorph = nm.NeuroMorpho(query)
 ```
 
 ### Downloading morphology data
