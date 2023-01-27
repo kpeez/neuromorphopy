@@ -119,9 +119,6 @@ class NeuroMorpho:
     def download_query_swc(self) -> None:
         """Look up neuron name and retrieve swc data from NeuroMorpho."""
         assert self.neuron_metadata.empty is False, "No metadata!"
-
-        print(f"Downloading swc data for {len(self.neuron_metadata['neuron_name'])} neurons...")
-
         self.swc_data = download_swc_data(self.neuron_metadata["neuron_name"])
 
     def export_metadata(self, export_path: str, query_filename: str) -> None:
