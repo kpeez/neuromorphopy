@@ -169,6 +169,6 @@ def clean_metadata_columns(metadata: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: metadata with cleaned columns.
     """
     for col in metadata.columns:
-        if metadata[col].dtype == "object":
+        if metadata[col].dtype == "object" and col != "neuron_name":
             metadata[col] = clean_str_column(metadata[col].astype(str))
     return metadata
