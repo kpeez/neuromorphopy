@@ -30,8 +30,7 @@ def validate_swc_data(swc_data: pd.DataFrame) -> None:
 
 
 def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
-    """
-    Create DataFrame of swc data for neuron using neuron_name.
+    """Create DataFrame of swc data for neuron using neuron_name.
 
     Args:
         neuron_name (str): name of neuron
@@ -68,8 +67,7 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
 
 
 def download_swc_data(neuron_list: list[str] | pd.Series) -> dict[str, pd.DataFrame]:
-    """
-    Look up neuron name and retrieve swc data from NeuroMorpho.
+    """Look up neuron name and retrieve swc data from NeuroMorpho.
 
     Args:
         neuron_list (list[str] | pd.Series[str]): List of neuron names to retrieve swc data for.

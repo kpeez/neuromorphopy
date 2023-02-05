@@ -21,8 +21,7 @@ NEURON_INFO = f"{NEUROMORPHO}/neuron_info.jsp?neuron_name="
 
 @no_type_check
 def add_dh_cipher_set() -> None:
-    """
-    Update SSL cipher list to ignore DH KEY TOO SMALL error.
+    """Update SSL cipher list to ignore DH KEY TOO SMALL error.
 
     See:
     https://stackoverflow.com/questions/38015537/python-requests-exceptions-sslerror-dh-key-too-small
@@ -51,8 +50,7 @@ def _check_response_validity(page: requests.Response) -> None:
 
 
 def check_api_status() -> bool:
-    """
-    Check status of API health.
+    """Check status of API health.
 
     Returns:
         bool: True if API is working, False if not.
@@ -65,8 +63,7 @@ def check_api_status() -> bool:
 
 
 def request_url_get(url: str) -> requests.Response:
-    """
-    Send GET request for a URL.
+    """Send GET request for a URL.
 
     Args:
         url (str): Link to request.
@@ -85,12 +82,12 @@ def request_url_post(
     query: dict[str, list[str]],
     **kwargs: Any,
 ) -> requests.Response:
-    """
-    Send POST request for URL.
+    """Send POST request for URL.
 
     Args:
         url (str): Link to post request to
         query (dict[str, str]): Search criteria to filter request by.
+        kwargs (Any): Additional keyword arguments to pass to requests.post.
 
     Returns:
         Response
@@ -112,8 +109,7 @@ def request_url_post(
 
 
 def get_image_url(neuron_name: str) -> str:
-    """
-    Get image url for neuron.
+    """Get image url for neuron.
 
     Args:
         neuron_name (str): name of neuron
@@ -129,8 +125,7 @@ def get_image_url(neuron_name: str) -> str:
 
 
 def load_json_query(query_file: str | Path) -> dict[str, list[str]]:
-    """
-    Load json query file.
+    """Load json query file.
 
     Args:
         query_file (str): Path to json query file.
@@ -159,8 +154,7 @@ def clean_str_column(col: pd.Series) -> pd.Series:
 
 
 def clean_metadata_columns(metadata: pd.DataFrame) -> pd.DataFrame:
-    """
-    Clean columns of dataframe.
+    """Clean columns of dataframe.
 
     Args:
         metadata (pd.DataFrame): Dataframe to clean.
