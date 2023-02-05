@@ -96,17 +96,20 @@ select = [
     "SIM",
     # flake8-comprehensions
     "C4",
+    # flake8-docstrings
+    "D",
     # ruff
     "RUF",
 ]
 
 ignore = [
-    # ignore ' : ' (used by black)
-    # "E203", # not implemented yet
-    # DoNotAssignLambda
-    "E731",
+    # "E203", # ignore ' : ' (used by black) ( not implemented yet )
+    "E731", # DoNotAssignLambda
+    "D107", # missing docstring in __init__.py
 ]
 
 [tool.ruff.per-file-ignores]
-"__init__.py" = ["E402", "F401"]
+"__init__.py" = ["E402", "F401", "D107"]
 
+[tool.ruff.pydocstyle]
+convention = "google"

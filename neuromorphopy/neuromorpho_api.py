@@ -43,15 +43,12 @@ def validate_query(query: dict[str, list[str]]) -> None:
 
 
 class NeuroMorpho:
-    """
-    Access NeuroMorpho API to get neuron reconstructions.
+    """Access NeuroMorpho API to get neuron reconstructions.
 
     Attributes:
         valid_field_names (set): Set containing the valid field names to use for a query.
         neuron_metadata(pd.DataFrame): Results of search query.
         swc_data (dict): dict of neuron_name and its swc data
-
-
     """
 
     def __init__(self, query: dict[str, list[str]] | None = None) -> None:
@@ -67,8 +64,7 @@ class NeuroMorpho:
             raise ConnectionError("The NeuroMorpho API is currently down.")
 
     def get_field_values(self, field: str) -> set[str]:
-        """
-        Get all possible values for a given field.
+        """Get all possible values for a given field.
 
         Args:
             field (str): field name
@@ -80,8 +76,7 @@ class NeuroMorpho:
 
     @staticmethod
     def get_neuron_metadata(query: dict[str, list[str]]) -> pd.DataFrame:
-        """
-        Get list of neurons from a search query.
+        """Get list of neurons from a search query.
 
         See list of query keys here: https://neuromorpho.org/api/neuron/fields
 
@@ -105,8 +100,7 @@ class NeuroMorpho:
         return clean_metadata_columns(metadata)
 
     def search_archives(self, query: dict[str, list[str]]) -> None:
-        """
-        Search NeuroMorpho archives.
+        """Search NeuroMorpho archives.
 
         Args:
             query (dict[str, str]): query values to filter neurons
@@ -124,8 +118,7 @@ class NeuroMorpho:
         self.swc_data = download_swc_data(self.neuron_metadata["neuron_name"])
 
     def export_metadata(self, export_path: str, query_filename: str) -> None:
-        """
-        Export metadata as csv.
+        """Export metadata as csv.
 
         Args:
             export_path (str): export path
@@ -134,8 +127,7 @@ class NeuroMorpho:
         self.neuron_metadata.to_csv(f"{Path(export_path)}/{query_filename}.csv", index=False)
 
     def export_swc_data(self, export_path: str, swc_filename: str) -> None:
-        """
-        Export dict of swc data to pkl file.
+        """Export dict of swc data to pkl file.
 
         Args:
             export_path (str): export path
