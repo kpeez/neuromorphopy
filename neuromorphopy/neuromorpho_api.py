@@ -1,18 +1,20 @@
 """Work with NeuroMorpho API."""
 from __future__ import annotations
+
 import pickle
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
+
 from neuromorphopy.swc import download_swc_data, get_neuron_swc
 from neuromorphopy.utils import (
+    NEUROMORPHO_API,
     check_api_status,
+    clean_metadata_columns,
     request_url_get,
     request_url_post,
-    clean_metadata_columns,
-    NEUROMORPHO_API,
 )
-
 
 MAX_NEURONS = 500
 
