@@ -1,11 +1,13 @@
 """Utilities for NeuroMorpho API."""
 from __future__ import annotations
-import pandas as pd
-import json
+
 import contextlib
+import json
 import re
-from typing import Any, no_type_check
 from pathlib import Path
+from typing import Any, no_type_check
+
+import pandas as pd
 import requests
 from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
@@ -33,6 +35,7 @@ def add_dh_cipher_set() -> None:
 
 def _check_response_validity(page: requests.Response) -> None:
     """Ensure we have a valid response."""
+    GOOD_STATUS = 200
     bad_status = {
         400: "400 error: Bad request, usually wrong parameters to select queries.",
         404: "404 error: Resource not found or does not exist.",
@@ -40,7 +43,7 @@ def _check_response_validity(page: requests.Response) -> None:
         500: "500 error: Internal Server Error. Please notify nmoadmin@gmu.edu.",
     }
 
-    if page.status_code == 200:
+    if page.status_code == GOOD_STATUS:
         return
 
     else:
@@ -56,10 +59,7 @@ def check_api_status() -> bool:
     """
     api_health = request_url_get(f"{NEUROMORPHO_API}/health")
     _check_response_validity(api_health)
-    if api_health.json()["status"] == "UP":
-        status = True
-    else:
-        status = False
+    status = api_health.json()["status"] == "UP"
 
     return status
 
@@ -138,7 +138,7 @@ def load_json_query(query_file: str | Path) -> dict[str, list[str]]:
     Returns:
         dict[str, list[str]]: Query dictionary.
     """
-    with open(query_file, "r") as file:
+    with open(query_file) as file:
         # Load the JSON data from the file
         query: dict[str, list[str]] = json.load(file)
 

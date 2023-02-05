@@ -1,10 +1,11 @@
 """Process swc data from NeuroMorpho."""
+import contextlib
 import io
 import re
+
 import pandas as pd
-import contextlib
-from neuromorphopy.utils import request_url_get
-from neuromorphopy.utils import NEUROMORPHO, NEURON_INFO
+
+from neuromorphopy.utils import NEUROMORPHO, NEURON_INFO, request_url_get
 
 
 def get_swc_url(neuron_name: str) -> str:
@@ -45,7 +46,9 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
 
     raw_swc_data = pd.DataFrame(response_list[num_lines:])
     swc_data = raw_swc_data[0].str.replace("\r\n", "").str.split(expand=True)
-    col_names = dict(zip(swc_data.columns, ["id", "type", "x", "y", "z", "radius", "parent"]))
+    col_names = dict(
+        zip(swc_data.columns, ["id", "type", "x", "y", "z", "radius", "parent"], strict=True)
+    )
     swc_data.rename(columns=col_names, inplace=True)
     # set dtypes
     swc_data = swc_data.astype(
