@@ -54,27 +54,6 @@ exclude = '''
   ))
 '''
 
-[tool.mypy]
-files = ["neuromorphopy"]
-plugins = "numpy.typing.mypy_plugin"
-disallow_untyped_defs = true
-disallow_any_unimported = true
-no_implicit_optional = true
-check_untyped_defs = true
-warn_return_any = false
-warn_unused_ignores = true
-show_error_codes = true
-exclude = [
-    '\.venv',
-    'tests'
-]
-
-[[tool.mypy.overrides]]
-module = [
-"neuromorpho_api"
-]
-ignore_missing_imports = true
-
 [tool.ruff]
 line-length = 100
 target-version = "py310"
@@ -113,3 +92,24 @@ ignore = [
 
 [tool.ruff.pydocstyle]
 convention = "google"
+
+[tool.mypy]
+files = ["neuromorphopy"]
+plugins = "numpy.typing.mypy_plugin"
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = false
+warn_unused_ignores = true
+show_error_codes = true
+exclude = [
+    '\.venv',
+    'tests'
+]
+
+[[tool.mypy.overrides]]
+module = [
+"neuromorpho_api"
+]
+ignore_missing_imports = true
