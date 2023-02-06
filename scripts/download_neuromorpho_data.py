@@ -39,4 +39,4 @@ if __name__ == "__main__":
     swc_filename = f"{Path(args.query_file).stem}_swc.pkl"
     nm.export_swc_data(args.export_path, swc_filename)
 
-    print(f"Finished downloading data from {args.query_filename}.")
+    print(f"Finished downloading data from {args.query_file}.")
