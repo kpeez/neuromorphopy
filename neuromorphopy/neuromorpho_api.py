@@ -124,7 +124,10 @@ class NeuroMorpho:
             export_path (str): export path
             query_filename (str): name of metadata file
         """
-        self.neuron_metadata.to_csv(f"{Path(export_path)}/{query_filename}.csv", index=False)
+        if Path(query_filename).suffix != ".csv":
+            export_filename = f"{query_filename}.csv"
+
+        self.neuron_metadata.to_csv(f"{Path(export_path)}/{export_filename}", index=False)
 
     def export_swc_data(self, export_path: str, swc_filename: str) -> None:
         """Export dict of swc data to pkl file.
@@ -133,5 +136,7 @@ class NeuroMorpho:
             export_path (str): export path
             swc_filename (str): name of pkl file
         """
-        with open(f"{Path(export_path)}/{swc_filename}.pkl", "wb") as f:
+        if Path(swc_filename).suffix != ".pkl":
+            export_pkl = f"{swc_filename}.pkl"
+        with open(f"{Path(export_path)}/{export_pkl}", "wb") as f:
             pickle.dump(self.swc_data, f, protocol=-1)
