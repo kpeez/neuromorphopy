@@ -11,7 +11,7 @@ def config_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-q",
-        "--query_filename",
+        "--query_file",
         type=str,
         default="",
         help="Path to query file to search for neurons on neuromorpho.org.",
@@ -28,14 +28,14 @@ def config_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = config_args()
-    query = load_json_query(args.query_filename)
     print("Running query...")
+    query = load_json_query(args.query_file)
     nm = NeuroMorpho(query)
     print("Downloading data from neuromorpho.org...")
     nm.download_query_swc()
     print("Exporting data...")
-
-    metadata_filename = f"{Path(args.query_filename).stem}_metadata.csv"
-    swc_filename = f"{Path(args.query_filename).stem}_swc.pkl"
+    metadata_filename = f"{Path(args.query_file).stem}_metadata.csv"
     nm.export_metadata(args.export_path, metadata_filename)
+    swc_filename = f"{Path(args.query_file).stem}_swc.pkl"
     nm.export_swc_data(args.export_path, swc_filename)
+    print(f"Finished downloading data from {args.query_filename}.")
