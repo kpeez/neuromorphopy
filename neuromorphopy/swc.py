@@ -46,13 +46,13 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
     raw_swc_data = pd.DataFrame(response_list[num_lines:])
     swc_data = raw_swc_data[0].str.replace("\r\n", "").str.split(expand=True)
     col_names = dict(
-        zip(swc_data.columns, ["id", "type", "x", "y", "z", "radius", "parent"], strict=True)
+        zip(swc_data.columns, ["n", "type", "x", "y", "z", "radius", "parent"], strict=True)
     )
     swc_data.rename(columns=col_names, inplace=True)
     # set dtypes
     swc_data = swc_data.astype(
         {
-            "id": int,
+            "n": int,
             "type": int,
             "x": float,
             "y": float,
