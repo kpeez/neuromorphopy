@@ -1,6 +1,6 @@
 .PHONY: install
 install: ## Install the poetry environment and install the pre-commit hooks
-	@echo "📦 Creating virtual environment using pyenv and poetry"
+	@echo "📦 Creating virtual environment using poetry"
 	@poetry install	
 	@poetry run pre-commit install
 	@poetry shell
@@ -28,13 +28,19 @@ build: clean-build ## Build wheel file using poetry
 clean-build: ## clean build artifacts
 	@rm -rf dist
 
+.PHONY: docs
+docs: ## Build and serve the documentation
+	@poetry run mkdocs serve
+
 .PHONY: docs-test
 docs-test: ## Test if documentation can be built without warnings or errors
 	@poetry run mkdocs build -s
 
-.PHONY: docs
-docs: ## Build and serve the documentation
-	@poetry run mkdocs serve
+.PHONY: update	
+update: ## Update the poetry environment and pre-commit hooks
+	@echo "⚙️  Updating poetry environment and pre-commit hooks"
+	@poetry update
+	@poetry run pre-commit autoupdate
 
 .PHONY: help
 help:
