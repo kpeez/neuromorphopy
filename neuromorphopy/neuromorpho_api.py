@@ -6,12 +6,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from IPython.display import Image
 
 from neuromorphopy.swc import download_swc_data, get_neuron_swc
 from neuromorphopy.utils import (
     NEUROMORPHO_API,
     check_api_status,
     clean_metadata_columns,
+    get_image_url,
     request_url_get,
     request_url_post,
 )
@@ -141,3 +143,10 @@ class NeuroMorpho:
 
         with open(f"{Path(export_path)}/{export_pkl}", "wb") as f:
             pickle.dump(self.swc_data, f, protocol=-1)
+
+    @staticmethod
+    def view_neuron_image(neuron_name: str) -> Image:
+        """View neuron image using neuron name."""
+        image_url = get_image_url(neuron_name)
+        # return Image(url=f"https://neuromorpho.org/neuron_info.jsp?neuron_name={neuron_name}")
+        return Image(url=image_url)
