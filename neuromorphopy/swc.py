@@ -1,7 +1,9 @@
 """Process swc data from NeuroMorpho."""
 import contextlib
+import datetime
 import io
 import re
+from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
@@ -67,17 +69,33 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
     return swc_data
 
 
-def download_swc_data(neuron_list: list[str] | pd.Series) -> dict[str, pd.DataFrame]:
-    """Look up neuron name and retrieve swc data from NeuroMorpho.
+def download_swc_data(
+    neuron_list: list[str] | pd.Series,
+    download_dir: str | Path | None = None,
+) -> None:
+    """Download swc data from list of neurons on NeuroMorpho.
+
+    This function will create a directory in the ``download_dir`` (or current working directory
+    if no directory is provided). All neurons in the ``neuron_list`` will be saved here.
 
     Args:
         neuron_list (list[str] | pd.Series[str]): List of neuron names to retrieve swc data for.
-
-    Returns:
-        dict[str, pd.DataFrame]: Dictionary of neuron names and swc data.
+        download_dir (str | Path): Path to download swc data to. If None, will download to
+        current working directory.
     """
     print(f"Downloading swc data for {len(neuron_list)} neurons.")
-    swc_data = {}
+
+    download_dirname = datetime.datetime.now().strftime("%Y-%m-%d-swc_files")
+
+    download_path = (
+        Path.cwd() / download_dirname
+        if not download_dir
+        else Path(f"{download_dir}/{download_dirname}")
+    )
+
+    if not download_path.exists():
+        download_path.mkdir(parents=True)
+
     num_iterations = len(neuron_list)
     percent_increment = 5
     increment_value = int(num_iterations * percent_increment / 100)
@@ -85,10 +103,9 @@ def download_swc_data(neuron_list: list[str] | pd.Series) -> dict[str, pd.DataFr
     with tqdm(total=num_iterations) as pbar:
         for n, neuron in enumerate(neuron_list):
             if n % 100 == 0:
-                print(f"loading neuron: {n}")
+                print(f"Downloading neuron: {n}")
             with contextlib.suppress(ValueError):
-                swc_data[neuron] = get_neuron_swc(neuron_name=neuron)
+                swc_data = get_neuron_swc(neuron_name=neuron)
+                swc_data.to_csv(f"{download_path}/{neuron}.swc", sep=" ", header=True, index=False)
             if n % increment_value == 0:
                 pbar.update(increment_value)
-
-    return swc_data
