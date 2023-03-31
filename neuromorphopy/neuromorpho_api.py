@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from IPython.display import Image
+from tqdm import tqdm
 
 from neuromorphopy.swc import download_swc_data, get_neuron_swc
 from neuromorphopy.utils import (
@@ -86,13 +87,13 @@ class NeuroMorpho:
             query (dict[str, str]): query values to filter neurons
         """
         validate_query(query)
-        print("Beginning search...")
         # use an initial request to get query info
         total_neurons = request_url_post(query).json()["page"]["totalElements"]
         num_pages = np.ceil(total_neurons / MAX_NEURONS).astype(int)
+        print(f"Downloading metadata for {total_neurons} neurons.")
 
         neuron_list = []  # list of neuron metadata dicts
-        for page_idx in range(num_pages):
+        for page_idx in tqdm(range(num_pages), unit="page", desc="Processing pages"):
             neuron_count = MAX_NEURONS
             page = request_url_post(query, params={"size": neuron_count, "page": page_idx})
             neuron_list.extend(page.json()["_embedded"]["neuronResources"])
