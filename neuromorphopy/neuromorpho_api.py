@@ -1,7 +1,6 @@
 """Work with NeuroMorpho API."""
 from __future__ import annotations
 
-import pickle
 from pathlib import Path
 
 import numpy as np
@@ -51,14 +50,12 @@ class NeuroMorpho:
     Attributes:
         valid_field_names (set): Set containing the valid field names to use for a query.
         neuron_metadata(pd.DataFrame): Results of search query.
-        swc_data (dict): dict of neuron_name and its swc data
     """
 
     def __init__(self, query: dict[str, list[str]] | None = None) -> None:
         if check_api_status():
             self.valid_field_names: set[str] = get_query_fields()
             self.neuron_metadata: pd.DataFrame = pd.DataFrame()
-            self.swc_data: dict[str, pd.DataFrame] = {}
 
             if query:
                 self.search_archives(query)
@@ -115,10 +112,19 @@ class NeuroMorpho:
         """Get DataFrame of swc data for neuron using neuron_name."""
         return get_neuron_swc(neuron_name)
 
-    def download_query_swc(self) -> None:
-        """Look up neuron name and retrieve swc data from NeuroMorpho."""
+    def download_query_swc(self, download_dir: str | Path | None = None) -> None:
+        """Download swc data from NeuroMorpho for all neurons in metadata.
+
+        This function will create a directory in the ``download_dir`` (or current working directory
+        if no directory is provided). All neurons in the ``neuron_list`` will be saved here.
+
+        Args:
+            neuron_list (list[str] | pd.Series[str]): List of neuron names to retrieve swc data for.
+            download_dir (str | Path): Path to download swc data to. If None, will download to
+            current working directory.
+        """
         assert self.neuron_metadata.empty is False, "No metadata!"
-        self.swc_data = download_swc_data(self.neuron_metadata["neuron_name"])
+        download_swc_data(self.neuron_metadata["neuron_name"], download_dir=download_dir)
 
     def export_metadata(self, export_path: str, query_filename: str) -> None:
         """Export metadata as csv.
@@ -133,21 +139,9 @@ class NeuroMorpho:
 
         self.neuron_metadata.to_csv(f"{Path(export_path)}/{export_filename}", index=False)
 
-    def export_swc_data(self, export_path: str, swc_filename: str) -> None:
-        """Export dict of swc data to pkl file.
-
-        Args:
-            export_path (str): export path
-            swc_filename (str): name of pkl file
-        """
-        export_pkl = f"{swc_filename}.pkl" if Path(swc_filename).suffix != ".pkl" else swc_filename
-
-        with open(f"{Path(export_path)}/{export_pkl}", "wb") as f:
-            pickle.dump(self.swc_data, f, protocol=-1)
-
     @staticmethod
     def view_neuron_image(neuron_name: str) -> Image:
         """View neuron image using neuron name."""
-        image_url = get_image_url(neuron_name)
-        # return Image(url=f"https://neuromorpho.org/neuron_info.jsp?neuron_name={neuron_name}")
-        return Image(url=image_url)
+        get_image_url(neuron_name)
+
+        return Image(url=f"https://neuromorpho.org/neuron_info.jsp?neuron_name={neuron_name}")
