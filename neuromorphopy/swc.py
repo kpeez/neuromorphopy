@@ -4,6 +4,7 @@ import io
 import re
 
 import pandas as pd
+from tqdm import tqdm
 
 from neuromorphopy.utils import NEUROMORPHO, NEURON_INFO, request_url_get
 
@@ -75,13 +76,19 @@ def download_swc_data(neuron_list: list[str] | pd.Series) -> dict[str, pd.DataFr
     Returns:
         dict[str, pd.DataFrame]: Dictionary of neuron names and swc data.
     """
-    print(f"Downloading swc data for {len(neuron_list)} neurons...")
-
+    print(f"Downloading swc data for {len(neuron_list)} neurons.")
     swc_data = {}
-    for n, neuron in enumerate(neuron_list):
-        if n % 100 == 0:
-            print(f"loading neuron: {n}")
-        with contextlib.suppress(ValueError):
-            swc_data[neuron] = get_neuron_swc(neuron_name=neuron)
+    num_iterations = len(neuron_list)
+    percent_increment = 5
+    increment_value = int(num_iterations * percent_increment / 100)
+
+    with tqdm(total=num_iterations) as pbar:
+        for n, neuron in enumerate(neuron_list):
+            if n % 100 == 0:
+                print(f"loading neuron: {n}")
+            with contextlib.suppress(ValueError):
+                swc_data[neuron] = get_neuron_swc(neuron_name=neuron)
+            if n % increment_value == 0:
+                pbar.update(increment_value)
 
     return swc_data
