@@ -85,7 +85,7 @@ def download_swc_data(
     """
     print(f"Downloading swc data for {len(neuron_list)} neurons.")
 
-    download_dirname = datetime.datetime.now().strftime("%Y-%m-%d-swc_files")
+    download_dirname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M-swc_files")
 
     download_path = (
         Path.cwd() / download_dirname
@@ -100,10 +100,14 @@ def download_swc_data(
     percent_increment = 5
     increment_value = int(num_iterations * percent_increment / 100)
 
-    with tqdm(total=num_iterations) as pbar:
+    with tqdm(
+        total=num_iterations,
+        desc="Downloading neurons",
+        bar_format="{desc}[{n_fmt}/{total_fmt}]{percentage:3.0f}%|{bar}"
+        "{postfix} [{elapsed}<{remaining}]",
+        ascii=False,
+    ) as pbar:
         for n, neuron in enumerate(neuron_list):
-            if n % 100 == 0:
-                print(f"Downloading neuron: {n}")
             with contextlib.suppress(ValueError):
                 swc_data = get_neuron_swc(neuron_name=neuron)
                 swc_data.to_csv(f"{download_path}/{neuron}.swc", sep=" ", header=True, index=False)

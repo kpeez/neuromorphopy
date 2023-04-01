@@ -90,7 +90,14 @@ class NeuroMorpho:
         print(f"Downloading metadata for {total_neurons} neurons.")
 
         neuron_list = []  # list of neuron metadata dicts
-        for page_idx in tqdm(range(num_pages), unit="page", desc="Processing pages"):
+        for page_idx in tqdm(
+            range(num_pages),
+            unit="page",
+            desc="Processing pages",
+            bar_format="{desc}[{n_fmt}/{total_fmt}]{percentage:3.0f}%|{bar}"
+            "{postfix} [{elapsed}<{remaining}]",
+            ascii=False,
+        ):
             neuron_count = MAX_NEURONS
             page = request_url_post(query, params={"size": neuron_count, "page": page_idx})
             neuron_list.extend(page.json()["_embedded"]["neuronResources"])
