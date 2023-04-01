@@ -105,7 +105,6 @@ def download_swc_data(
         desc="Downloading neurons",
         bar_format="{desc}[{n_fmt}/{total_fmt}]{percentage:3.0f}%|{bar}"
         "{postfix} [{elapsed}<{remaining}]",
-        ascii=False,
     ) as pbar:
         for n, neuron in enumerate(neuron_list):
             with contextlib.suppress(ValueError):

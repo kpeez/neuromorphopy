@@ -96,7 +96,6 @@ class NeuroMorpho:
             desc="Processing pages",
             bar_format="{desc}[{n_fmt}/{total_fmt}]{percentage:3.0f}%|{bar}"
             "{postfix} [{elapsed}<{remaining}]",
-            ascii=False,
         ):
             neuron_count = MAX_NEURONS
             page = request_url_post(query, params={"size": neuron_count, "page": page_idx})
