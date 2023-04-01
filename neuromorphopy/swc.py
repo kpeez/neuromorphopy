@@ -1,5 +1,4 @@
 """Process swc data from NeuroMorpho."""
-import contextlib
 import datetime
 import io
 import re
@@ -107,8 +106,10 @@ def download_swc_data(
         "{postfix} [{elapsed}<{remaining}]",
     ) as pbar:
         for n, neuron in enumerate(neuron_list):
-            with contextlib.suppress(ValueError):
+            try:
                 swc_data = get_neuron_swc(neuron_name=neuron)
                 swc_data.to_csv(f"{download_path}/{neuron}.swc", sep=" ", header=True, index=False)
+            except Exception as e:
+                print(f"Error downloading {neuron}: {e}")
             if n % increment_value == 0:
                 pbar.update(increment_value)
