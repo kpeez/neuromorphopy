@@ -82,10 +82,7 @@ def download_swc_data(
         download_dir (str | Path): Path to download swc data to. If None, will download to
         current working directory.
     """
-    print(f"Downloading swc data for {len(neuron_list)} neurons.")
-
     download_dirname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M-swc_files")
-
     download_path = (
         Path.cwd() / download_dirname
         if not download_dir
@@ -95,9 +92,14 @@ def download_swc_data(
     if not download_path.exists():
         download_path.mkdir(parents=True)
 
-    num_iterations = len(neuron_list)
+    # don't download neurons that already exist in the download directory
+    downloaded_neurons = [f.stem for f in download_path.parent.rglob("*.swc")]
+    neurons = list(set(neuron_list) - set(downloaded_neurons))
+
+    num_iterations = len(neurons)
     percent_increment = 5
     increment_value = int(num_iterations * percent_increment / 100)
+    print(f"Downloading swc data for {len(neurons)} neurons.")
 
     with tqdm(
         total=num_iterations,
@@ -105,7 +107,7 @@ def download_swc_data(
         bar_format="{desc}[{n_fmt}/{total_fmt}]{percentage:3.0f}%|{bar}"
         "{postfix} [{elapsed}<{remaining}]",
     ) as pbar:
-        for n, neuron in enumerate(neuron_list):
+        for n, neuron in enumerate(neurons):
             try:
                 swc_data = get_neuron_swc(neuron_name=neuron)
                 swc_data.to_csv(f"{download_path}/{neuron}.swc", sep=" ", header=True, index=False)
