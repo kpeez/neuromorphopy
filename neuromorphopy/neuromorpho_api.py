@@ -56,10 +56,9 @@ class NeuroMorpho:
         if check_api_status():
             self.valid_field_names: set[str] = get_query_fields()
             self.neuron_metadata: pd.DataFrame = pd.DataFrame()
-
-            if query:
-                self.search_archives(query)
-
+            self.query = query
+            if self.query:
+                self.search_archives()
         else:
             raise ConnectionError("The NeuroMorpho API is currently down.")
 
@@ -105,13 +104,12 @@ class NeuroMorpho:
 
         return clean_metadata_columns(metadata)
 
-    def search_archives(self, query: dict[str, list[str]]) -> None:
-        """Search NeuroMorpho archives.
+    def search_archives(self) -> None:
+        """Search NeuroMorpho archives."""
+        if not self.query:
+            raise ValueError("No query provided.")
 
-        Args:
-            query (dict[str, str]): query values to filter neurons
-        """
-        self.neuron_metadata = self.get_neuron_metadata(query)
+        self.neuron_metadata = self.get_neuron_metadata(self.query)
 
     @staticmethod
     def neuron_swc_data(neuron_name: str) -> pd.DataFrame:
@@ -130,6 +128,11 @@ class NeuroMorpho:
             current working directory.
         """
         assert self.neuron_metadata.empty is False, "No metadata!"
+
+        if self.neuron_metadata.empty:
+            print("No metadata! -- Downloading metadata...")
+            self.get_neuron_metadata()
+
         download_swc_data(self.neuron_metadata["neuron_name"], download_dir=download_dir)
 
     def export_metadata(self, export_path: str, query_filename: str) -> None:
