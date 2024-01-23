@@ -43,15 +43,8 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
     swc_resp = request_url_get(get_swc_url(neuron_name))
     response_text = io.StringIO(swc_resp.text)
     response_list = response_text.readlines()
-    num_lines = next(idx for idx, line in enumerate(response_list) if "#" not in line)
-
-    raw_swc_data = pd.DataFrame(response_list[num_lines:])
-    swc_data = raw_swc_data[0].str.replace("\r\n", "").str.split(expand=True)
-    col_names = dict(
-        zip(swc_data.columns, ["n", "type", "x", "y", "z", "radius", "parent"], strict=True)
-    )
-    swc_data.rename(columns=col_names, inplace=True)
-    # set dtypes
+    processed_data = [re.split(r'\s+', line.strip()) for line in response_list if not line.startswith('#')]
+    swc_data = pd.DataFrame(processed_data, columns=["n", "type", "x", "y", "z", "radius", "parent"])
     swc_data = swc_data.astype(
         {
             "n": int,
