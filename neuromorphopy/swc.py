@@ -3,11 +3,15 @@ import datetime
 import io
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from tqdm import tqdm
 
 from neuromorphopy.utils import NEUROMORPHO, NEURON_INFO, request_url_get
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def get_swc_url(neuron_name: str) -> str:
@@ -43,8 +47,12 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
     swc_resp = request_url_get(get_swc_url(neuron_name))
     response_text = io.StringIO(swc_resp.text)
     response_list = response_text.readlines()
-    processed_data = [re.split(r'\s+', line.strip()) for line in response_list if not line.startswith('#')]
-    swc_data = pd.DataFrame(processed_data, columns=["n", "type", "x", "y", "z", "radius", "parent"])
+    processed_data = [
+        re.split(r"\s+", line.strip()) for line in response_list if not line.startswith("#")
+    ]
+    swc_data = pd.DataFrame(
+        processed_data, columns=["n", "type", "x", "y", "z", "radius", "parent"]
+    )
     swc_data = swc_data.astype(
         {
             "n": int,
@@ -62,7 +70,7 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
 
 
 def download_swc_data(
-    neuron_list: list[str] | pd.Series,
+    neuron_list: Sequence[str],
     download_dir: str | Path | None = None,
 ) -> None:
     """Download swc data from list of neurons on NeuroMorpho.
@@ -71,9 +79,9 @@ def download_swc_data(
     if no directory is provided). All neurons in the ``neuron_list`` will be saved here.
 
     Args:
-        neuron_list (list[str] | pd.Series[str]): List of neuron names to retrieve swc data for.
-        download_dir (str | Path): Path to download swc data to. If None, will download to
-        current working directory.
+        neuron_list (Sequence[str]): List of neuron names to retrieve swc data for.
+        download_dir (str | Path | None): Path to download swc data to. If None, will download to
+        current working directory. Defaults to None.
     """
     download_dirname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M-swc_files")
     download_path = (
