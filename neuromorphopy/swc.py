@@ -2,6 +2,8 @@
 import datetime
 import io
 import re
+from collections.abc import Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -69,14 +71,20 @@ def get_neuron_swc(neuron_name: str) -> pd.DataFrame:
     return swc_data
 
 
+def download_neuron_data(neuron: str, download_path: Path) -> str:
+    try:
+        swc_data = get_neuron_swc(neuron_name=neuron)
+        swc_data.to_csv(f"{download_path}/{neuron}.swc", sep=" ", header=True, index=False)
+        return f"Downloaded {neuron}"
+    except Exception as e:
+        return f"Error downloading {neuron}: {e}"
+
+
 def download_swc_data(
     neuron_list: Sequence[str],
     download_dir: str | Path | None = None,
 ) -> None:
-    """Download swc data from list of neurons on NeuroMorpho.
-
-    This function will create a directory in the ``download_dir`` (or current working directory
-    if no directory is provided). All neurons in the ``neuron_list`` will be saved here.
+    """Download swc data from list of neurons on NeuroMorpho using parallel processing.
 
     Args:
         neuron_list (Sequence[str]): List of neuron names to retrieve swc data for.
@@ -93,26 +101,13 @@ def download_swc_data(
     if not download_path.exists():
         download_path.mkdir(parents=True)
 
-    # don't download neurons that already exist in the download directory
-    downloaded_neurons = [f.stem for f in download_path.parent.rglob("*.swc")]
+    downloaded_neurons = [f.stem for f in download_path.rglob("*.swc")]
     neurons = list(set(neuron_list) - set(downloaded_neurons))
 
-    num_iterations = len(neurons)
-    percent_increment = 5
-    increment_value = int(num_iterations * percent_increment / 100)
-    print(f"Downloading swc data for {len(neurons)} neurons.")
-
-    with tqdm(
-        total=num_iterations,
-        desc="Downloading neurons",
-        bar_format="{desc}[{n_fmt}/{total_fmt}]{percentage:3.0f}%|{bar}"
-        "{postfix} [{elapsed}<{remaining}]",
-    ) as pbar:
-        for n, neuron in enumerate(neurons):
-            try:
-                swc_data = get_neuron_swc(neuron_name=neuron)
-                swc_data.to_csv(f"{download_path}/{neuron}.swc", sep=" ", header=True, index=False)
-            except Exception as e:
-                print(f"Error downloading {neuron}: {e}")
-            if n % increment_value == 0:
-                pbar.update(increment_value)
+    with ThreadPoolExecutor() as executor:
+        tasks = {
+            executor.submit(download_neuron_data, neuron, download_path): neuron
+            for neuron in neurons
+        }
+        for _ in tqdm(as_completed(tasks), total=len(tasks), desc="Downloading neurons"):
+            pass
