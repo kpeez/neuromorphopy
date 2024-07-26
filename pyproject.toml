@@ -1,74 +1,87 @@
-[tool.poetry]
+[project]
 name = "neuromorphopy"
 version = "0.0.1"
+requires-python = ">=3.11"
 description = "Lightweight python package for downloading neuron morphologies from the NeuroMorpho archives."
-authors = ["Kyle Puhger <fkrpuhger@gmail.com>"]
-repository = "https://github.com/kpeez/neuromorphopy"
-documentation = "https://kpeez.github.io/neuromorphopy/"
+authors = [{ name = "Kyle Puhger", email = "krpuhger@gmail.com" }]
 readme = "README.md"
-packages = [
-  {include = "neuromorphopy"}
+license = { file = "LICENSE" }
+dependencies = [
+  "tqdm",
+  "numpy",
+  "pandas",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-tqdm = "^4.65.0"
-numpy = "^1.26.3"
-pandas = "^2.2.0"
+[tool.uv]
+dev-dependencies = [
+  "ruff",
+  "mypy",
+  "pre-commit",
+  "types-requests",
+  "pandas-stubs",
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+]
 
-[tool.poetry.group.dev.dependencies]
-ruff = "*"
-mypy = "^1.8"
-pre-commit = "^2.21.0"
-types-requests = "^2.31.0.20240106"
-pandas-stubs = "*"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^7.4"
-
-[tool.poetry.group.docs.dependencies]
-mkdocs = "^1.4.2"
-mkdocs-material = "^8.5.10"
-mkdocstrings = {extras = ["python"], version = "^0.19.0"}
+[project.urls]
+repository = "https://github.com/kpeez/neuromorphopy"
+documentation = "https://kpeez.github.io/neuromorphopy/"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-fix = true
+exclude = [".venv", "external"]
+
+[tool.ruff.lint]
 select = [
-    # pycodestyle
-    "E", "W",
-    # pyflakes
-    "F",
-    # pylint
-    "PL",
-    # isort
-    "I",
-    # pyupgrade
-    "UP",
-    # flake8-bugbear
-    "B",
-    # flake8-simplify
-    "SIM",
-    # flake8-comprehensions
-    "C4",
-    # ruff
-    "RUF",
+  # pycodestyle
+  "E",
+  "W",
+  # pyflakes
+  "F",
+  # pylint
+  "PL",
+  # isort
+  "I",
+  # flake8-bugbear
+  "B",
+  # flake8-simplify
+  "SIM",
+  # flake8-comprehensions
+  "C4",
+  # ruff
+  "RUF",
+]
+fixable = ["ALL"]
+ignore = [
+  # too many arguments
+  "PLR0913",
+  # too many local variables
+  "PLR0914",
+  # too many statements
+  "PLR0915",
+  # magic number
+  "PLR2004",
+  # line too long
+  "E501",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401", "D104"]
 
-
-[tool.ruff.per-file-ignores]
-"__init__.py" = ["E402", "F401", "D107"]
-
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
 
 [tool.mypy]
 files = ["neuromorphopy"]
@@ -85,7 +98,8 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = [
-"neuromorpho_api"
-]
+module = ["neuromorpho_api"]
 ignore_missing_imports = true
+warn_return_any = false
+disallow_any_unimported = false
+disable_error_code = "attr-defined"
