@@ -17,7 +17,7 @@ plugins:
             - sys.path.append('../')
 copyright: Maintained by Kyle Puhger.
 theme:
-  name: material
+  name: mkdocs
   feature:
     tabs: true
   palette:
