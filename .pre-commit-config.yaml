@@ -15,7 +15,7 @@
 repos:
 # Standard hooks
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+  rev: v4.6.0
   hooks:
   - id: check-added-large-files
   - id: check-case-conflict
@@ -31,6 +31,6 @@ repos:
 # Ruff, the Ruff formatter
 - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
-  rev: "v0.1.14"
+  rev: "v0.5.5"
   hooks:
     - id: ruff
