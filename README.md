@@ -9,14 +9,36 @@ Lightweight python package for downloading neuron morphologies from the [NeuroMo
 - **Github repository**: <https://github.com/kpeez/neuromorphopy/>
 - **Documentation** <https://kpeez.github.io/neuromorphopy/>
 
+## Requirements
+
+- Python >= 3.11
+
 ## Installation
 
-If using `poetry`, simply clone the repo and install
+### Simple Installation
+
+The easiest way to install is using pip:
 
 ```bash
 git clone https://github.com/kpeez/neuromorphopy.git
 cd neuromorphopy
-make install
+pip install -r requirements.txt
+pip install -e .
+```
+
+### Development Installation
+
+For development work, we recommend using [uv](https://github.com/astral-sh/uv) for faster dependency resolution and better reproducibility:
+
+```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone and install
+git clone https://github.com/kpeez/neuromorphopy.git
+cd neuromorphopy
+uv venv
+uv sync
 ```
 
 ## Usage
