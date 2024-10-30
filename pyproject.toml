@@ -14,7 +14,6 @@ dependencies = [
 
 [tool.uv]
 dev-dependencies = [
-  "pip",
   "ruff",
   "mypy",
   "pre-commit",
@@ -33,43 +32,34 @@ documentation = "https://kpeez.github.io/neuromorphopy/"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--log-cli-level=INFO -sv --durations=0"
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-exclude = [".venv", "external"]
 
 [tool.ruff.lint]
 select = [
-  # pycodestyle
-  "E",
+  "E",   # pycodestyle
   "W",
-  # pyflakes
-  "F",
-  # pylint
-  "PL",
-  # isort
-  "I",
-  # flake8-bugbear
-  "B",
-  # flake8-simplify
-  "SIM",
-  # flake8-comprehensions
-  "C4",
-  # ruff
-  "RUF",
+  "F",   # pyflakes
+  "PL",  # pylint
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "SIM", # flake8-simplify
+  "C4",  # flake8-comprehensions
+  "RUF", # ruff
 ]
 fixable = ["ALL"]
 ignore = [
-  # too many arguments
-  "PLR0913",
-  # too many local variables
-  "PLR0914",
-  # too many statements
-  "PLR0915",
-  # magic number
-  "PLR2004",
-  # line too long
-  "E501",
+  "PLR0913", # too many arguments
+  "PLR0914", # too many local variables
+  "PLR0917", # too many positional arguments
+  "PLR2004", # magic number
+  "PLW2901", # for loop variable overwritten by assignment target
+  "E501",    # line too long
 ]
 
 [tool.ruff.lint.per-file-ignores]
