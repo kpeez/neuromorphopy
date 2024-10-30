@@ -16,6 +16,7 @@ dependencies = [
 dev-dependencies = [
   "ruff",
   "mypy",
+  "ipykernel",
   "pre-commit",
   "types-requests",
   "pandas-stubs",
