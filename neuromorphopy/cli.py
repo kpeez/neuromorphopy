@@ -114,10 +114,10 @@ def search(
         "-q",
         help="Suppress all output except errors",
     ),
-    log: bool = typer.Option(
+    no_log: bool = typer.Option(
         False,
-        "--log",
-        help="Save logs to file in output directory",
+        "--no-log",
+        help="Disable writing to log file",
     ),
     dry_run: bool = typer.Option(
         False,
@@ -137,7 +137,7 @@ def search(
     setup_logging(
         verbose=verbose,
         quiet=quiet,
-        log_to_file=log,
+        log_to_file=not no_log,
         output_dir=output_dir,
         query_file=query_file,
     )
