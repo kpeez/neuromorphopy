@@ -14,17 +14,20 @@ dependencies = [
   "pydantic>=2.9.2",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[project.optional-dependencies]
+dev = [
   "ruff",
   "mypy",
   "ipykernel",
   "pre-commit",
   "types-requests",
   "pandas-stubs",
+]
+docs = [
   "mkdocs",
   "mkdocs-material",
   "mkdocstrings[python]",
+  "mkdocs-include-markdown-plugin>=7.0.0",
 ]
 
 [project.urls]
