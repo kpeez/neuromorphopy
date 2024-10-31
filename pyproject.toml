@@ -14,7 +14,7 @@ dependencies = [
   "pydantic>=2.9.2",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
   "ruff",
   "mypy",
@@ -28,6 +28,7 @@ docs = [
   "mkdocs-material",
   "mkdocstrings[python]",
   "mkdocs-include-markdown-plugin>=7.0.0",
+  "pymdown-extensions>=10.12",
 ]
 
 [project.urls]
