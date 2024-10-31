@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import ssl
 from pathlib import Path
 from typing import Any
@@ -129,6 +130,7 @@ class NeuroMorphoClient:
         async def download_one(neuron: dict[str, Any]) -> None:
             async with download_semaphore:
                 name = neuron["neuron_name"]
+                logger = logging.getLogger("neuromorphopy")
 
                 # Generate target path based on grouping
                 if group_by:
@@ -140,6 +142,7 @@ class NeuroMorphoClient:
 
                 # Skip if already downloaded
                 if output_path.exists():
+                    logger.debug(f"Skipping {name}: already downloaded")
                     return
 
                 try:
@@ -150,8 +153,9 @@ class NeuroMorphoClient:
                         response.raise_for_status()
                         content = await response.text()
                         output_path.write_text(content)
+                        logger.info(f"Downloaded {name} to {output_path}")
                 except Exception as e:
-                    print(f"Error downloading {name}: {e}")
+                    logger.error(f"Error downloading {name}: {e}")
 
         tasks = [download_one(n) for n in neurons]
         if show_progress:
