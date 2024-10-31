@@ -62,6 +62,14 @@ sort: # sorting is optional
   ascending: true
 ```
 
+Use the command line interface to search and download neurons:
+
+```bash
+neuromorpho search -q query.yml -o ./data
+```
+
+Or use the Python API:
+
 ```python
 from neuromorphopy import Query, search_and_download
 
@@ -69,5 +77,6 @@ from neuromorphopy import Query, search_and_download
 query = Query.from_file("query.yml")
 search_and_download(query, "./data")
 ```
-
-For more advanced usage and API details, please refer to our [documentation](https://kpeez.github.io/neuromorphopy/).
+<!-- TODO: set up documentation website -->
+<!-- For more advanced usage and API details, please refer to our [documentation](https://kpeez.github.io/neuromorphopy/). -->
+<!-- For advanced usage and programmatic API, see our [documentation](https://neuromorphopy.readthedocs.io/). -->
