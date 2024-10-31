@@ -1,11 +1,19 @@
-# NeuroMorphopy
+# neuromorphopy
 
 [![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://kpeez.github.io/neuromorphopy/)
 
 Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
 
 - **Github repository**: <https://github.com/kpeez/neuromorphopy/>
-- **Documentation** <https://kpeez.github.io/neuromorphopy/>
+
+## Features
+
+- Simple and intuitive API for searching NeuroMorpho.org
+- Efficient concurrent downloads of neuron morphologies
+- Flexible query system with validation
+- Automatic metadata handling
+- Support for both synchronous and asynchronous operations
 
 ## Requirements
 
@@ -54,6 +62,14 @@ sort: # sorting is optional
   ascending: true
 ```
 
+Use the command line interface to search and download neurons:
+
+```bash
+neuromorpho search -q query.yml -o ./data
+```
+
+Or use the Python API:
+
 ```python
 from neuromorphopy import Query, search_and_download
 
@@ -61,5 +77,6 @@ from neuromorphopy import Query, search_and_download
 query = Query.from_file("query.yml")
 search_and_download(query, "./data")
 ```
-
-For more advanced usage and API details, please refer to our [documentation](https://kpeez.github.io/neuromorphopy/).
+<!-- TODO: set up documentation website -->
+<!-- For more advanced usage and API details, please refer to our [documentation](https://kpeez.github.io/neuromorphopy/). -->
+<!-- For advanced usage and programmatic API, see our [documentation](https://neuromorphopy.readthedocs.io/). -->

@@ -12,20 +12,28 @@ dependencies = [
   "pandas",
   "aiohttp>=3.10.10",
   "pydantic>=2.9.2",
+  "typer>=0.12.5",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "ruff",
   "mypy",
   "ipykernel",
   "pre-commit",
   "types-requests",
   "pandas-stubs",
+]
+docs = [
   "mkdocs",
   "mkdocs-material",
   "mkdocstrings[python]",
+  "mkdocs-include-markdown-plugin>=7.0.0",
+  "pymdown-extensions>=10.12",
 ]
+
+[project.scripts]
+neuromorpho = "neuromorphopy.cli:main"
 
 [project.urls]
 repository = "https://github.com/kpeez/neuromorphopy"
@@ -38,6 +46,9 @@ build-backend = "hatchling.build"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--log-cli-level=INFO -sv --durations=0"
+
+[tool.uv]
+default-groups = ["dev", "docs"]
 
 [tool.ruff]
 line-length = 100

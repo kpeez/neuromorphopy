@@ -1,6 +1,7 @@
 # datasets/docs
 data
 *.csv
+*.log
 
 # IDE temp files #
 .vscode/

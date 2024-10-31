@@ -1,8 +1,10 @@
-# neuromorphopy
+---
+title: Home
+---
 
-[![Release](https://img.shields.io/github/v/release/kpeez/neuromorphopy)](https://img.shields.io/github/v/release/kpeez/neuromorphopy)
-[![Build status](https://img.shields.io/github/workflow/status/kpeez/neuromorphopy/merge-to-main)](https://img.shields.io/github/workflow/status/kpeez/neuromorphopy/merge-to-main)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/kpeez/neuromorphopy)](https://img.shields.io/github/commit-activity/m/kpeez/neuromorphopy)
-[![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
+--8<-- "README.md"
 
-Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
+## Quick Links
+
+- [API Reference](api_reference/client.md)
+- [GitHub Repository](https://github.com/kpeez/neuromorphopy/)
