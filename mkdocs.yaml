@@ -8,10 +8,9 @@ nav:
   - Home: index.md
   - Getting Started: getting_started.md
   - User Guide:
-      - Installation: user_guide/installation.md
-      - Basic Usage: user_guide/basic_usage.md
       - Building Queries: user_guide/queries.md
-      - Downloading Data: user_guide/downloading.md
+      - Data Formats: user_guide/data_formats.md
+      - Advanced Operations: user_guide/advanced_operations.md
   - API Reference:
       - Client: api_reference/client.md
       - NeuroMorpho Queries: api_reference/query.md
@@ -51,7 +50,6 @@ plugins:
             show_source: true
             show_root_heading: true
             heading_level: 2
-  - include-markdown
 
 markdown_extensions:
   - admonition
