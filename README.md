@@ -1,11 +1,19 @@
-# NeuroMorphopy
+# neuromorphopy
 
 [![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://kpeez.github.io/neuromorphopy/)
 
 Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
 
 - **Github repository**: <https://github.com/kpeez/neuromorphopy/>
-- **Documentation** <https://kpeez.github.io/neuromorphopy/>
+
+## Features
+
+- Simple and intuitive API for searching NeuroMorpho.org
+- Efficient concurrent downloads of neuron morphologies
+- Flexible query system with validation
+- Automatic metadata handling
+- Support for both synchronous and asynchronous operations
 
 ## Requirements
 
