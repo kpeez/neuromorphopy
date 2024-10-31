@@ -2,7 +2,7 @@
 
 from .api import NeuroMorphoClient, search_and_download
 from .exceptions import ApiError, NeuroMorphoError, ValidationError
-from .query import QueryBuilder
+from .query import Query, QueryFields
 
 __version__ = "0.1.0"
 
@@ -10,7 +10,8 @@ __all__ = [
     "ApiError",
     "NeuroMorphoClient",
     "NeuroMorphoError",
-    "QueryBuilder",
+    "Query",
+    "QueryFields",
     "ValidationError",
     "search_and_download",
 ]
