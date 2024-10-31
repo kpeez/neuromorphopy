@@ -1,168 +1,100 @@
-"""Utilities for NeuroMorpho API."""
-from __future__ import annotations
+"""Utility functions for NeuroMorpho API.
 
-import contextlib
-import json
-import re
-from pathlib import Path
-from typing import Any, no_type_check
+This module handles API communication with NeuroMorpho.org, including special SSL handling
+required due to their server configuration.
+
+SSL Configuration:
+    The NeuroMorpho.org server uses older SSL settings that require specific handling:
+    1. Weak DH keys that modern Python rejects by default
+    2. Self-signed certificates in the certificate chain
+    3. Multiple layers of SSL verification that need to be disabled
+
+    To handle this, we:
+        - Use a custom HTTPAdapter with modified SSL context
+        - Disable certificate verification at multiple levels
+        - Configure ciphers to accept weaker DH keys
+        - Suppress insecure connection warnings
+
+Note:
+    While disabling SSL verification is generally not recommended, it's necessary
+    for accessing the NeuroMorpho data API.
+"""
+
+import ssl
 
 import pandas as pd
 import requests
-from urllib3 import disable_warnings
+from requests.adapters import HTTPAdapter
 from urllib3.exceptions import InsecureRequestWarning
-from urllib3.util import ssl_
+from urllib3.util.ssl_ import create_urllib3_context
 
-# globals
+# Constants
 NEUROMORPHO = "https://neuromorpho.org"
 NEUROMORPHO_API = "https://neuromorpho.org/api"
 NEURON_INFO = f"{NEUROMORPHO}/neuron_info.jsp?neuron_name="
 
 
-@no_type_check
-def add_dh_cipher_set() -> None:
-    """Update SSL cipher list to ignore DH KEY TOO SMALL error.
-
-    See:
-    https://stackoverflow.com/questions/38015537/python-requests-exceptions-sslerror-dh-key-too-small
-    """
-    disable_warnings(InsecureRequestWarning)
-    ssl_.DEFAULT_CIPHERS += "HIGH:!DH:!aNULL"
-    with contextlib.suppress(AttributeError):
-        requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += "HIGH:!DH:!aNULL"
+class WeakDHAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        context = create_urllib3_context()
+        # Disable ALL verification
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        context.set_ciphers("DEFAULT@SECLEVEL=1")
+        kwargs["ssl_context"] = context
+        return super().init_poolmanager(*args, **kwargs)
 
 
-def _check_response_validity(page: requests.Response) -> None:
-    """Ensure we have a valid response."""
-    GOOD_STATUS = 200
-    bad_status = {
-        400: "400 error: Bad request, usually wrong parameters to select queries.",
-        404: "404 error: Resource not found or does not exist.",
-        405: "405 error: Unsupported HTTP method used.",
-        500: "500 error: Internal Server Error. Please notify nmoadmin@gmu.edu.",
-    }
+# Disable SSL verification warnings globally
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-    if page.status_code == GOOD_STATUS:
-        return
-
-    else:
-        raise ValueError(bad_status[page.status_code])
-
-
-def check_api_status() -> bool:
-    """Check status of API health.
-
-    Returns:
-        bool: True if API is working, False if not.
-    """
-    api_health = request_url_get(f"{NEUROMORPHO_API}/health")
-    _check_response_validity(api_health)
-    status = api_health.json()["status"] == "UP"
-
-    return status
+# Create session with custom adapter
+session = requests.Session()
+session.verify = False
+adapter = WeakDHAdapter()
+session.mount("https://", adapter)
 
 
 def request_url_get(url: str) -> requests.Response:
-    """Send GET request for a URL.
-
-    Args:
-        url (str): Link to request.
-
-    Returns:
-        Response
-    """
-    add_dh_cipher_set()
-    page = requests.get(url, verify=False)
-    _check_response_validity(page)
-
-    return page
+    """Send GET request for a URL."""
+    response = session.get(url, verify=False)
+    _check_response_validity(response)
+    return response
 
 
-def request_url_post(
-    query: dict[str, list[str]],
-    **kwargs: Any,
-) -> requests.Response:
-    """Send POST request for URL.
-
-    Args:
-        url (str): Link to post request to
-        query (dict[str, str]): Search criteria to filter request by.
-        kwargs (Any): Additional keyword arguments to pass to requests.post.
-
-    Returns:
-        Response
-    """
-    add_dh_cipher_set()
+def request_url_post(query: dict[str, list[str]], **kwargs) -> requests.Response:
+    """Send POST request."""
     url = f"{NEUROMORPHO_API}/neuron/select/"
     headers = {"Content-Type": "application/json"}
-
-    page = requests.post(
-        url,
-        json=query,
-        headers=headers,
-        verify=False,
-        **kwargs,
-    )
-    _check_response_validity(page)
-
-    return page
+    kwargs["verify"] = False
+    response = session.post(url, json=query, headers=headers, **kwargs)
+    _check_response_validity(response)
+    return response
 
 
-def get_image_url(neuron_name: str) -> str:
-    """Get image url for neuron.
-
-    Args:
-        neuron_name (str): name of neuron
-
-    Returns:
-        str: image url
-    """
-    neuron_page = request_url_get(f"{NEURON_INFO}{neuron_name}")
-    pattern = re.compile(r"./images/imageFiles/[^/]*/[^/]*\.png")
-    match = re.findall(pattern, neuron_page.text)
-
-    return f"{NEUROMORPHO}{match[0]}"
-
-
-def load_json_query(query_file: str | Path) -> dict[str, list[str]]:
-    """Load json query file.
-
-    Args:
-        query_file (str): Path to json query file.
-
-    Returns:
-        dict[str, list[str]]: Query dictionary.
-    """
-    with open(query_file) as file:
-        # Load the JSON data from the file
-        query: dict[str, list[str]] = json.load(file)
-
-    return query
-
-
-def clean_str_column(col: pd.Series) -> pd.Series:
-    """Clean a str column from DataFrame."""
-    return (
-        col.str.lstrip("[")
-        .str.rstrip("]")
-        .str.replace("'", "")
-        .str.replace(", ", "_")
-        .str.replace("layer ", "layer")
-        .str.replace(" ", "_")
-        .str.lower()
-    )
+def _check_response_validity(response: requests.Response) -> None:
+    """Check if response is valid."""
+    if not response.ok:
+        raise ValueError(f"Request failed: {response.status_code} - {response.text}")
 
 
 def clean_metadata_columns(metadata: pd.DataFrame) -> pd.DataFrame:
-    """Clean columns of dataframe.
+    """Clean columns of dataframe using vectorized operations."""
+    df = metadata.copy()
 
-    Args:
-        metadata (pd.DataFrame): Dataframe to clean.
+    def clean_str_column(col: pd.Series) -> pd.Series:
+        if not pd.api.types.is_string_dtype(col):
+            col = col.astype(str)
 
-    Returns:
-        pd.DataFrame: metadata with cleaned columns.
-    """
-    for col in metadata.columns:
-        if metadata[col].dtype == "object" and col != "neuron_name":
-            metadata[col] = clean_str_column(metadata[col].astype(str))
-    return metadata
+        return (
+            col.str.strip("[]")
+            .str.replace("'", "", regex=False)
+            .str.replace("layer ", "", regex=False)
+            .str.replace(r"(?<=\w)[, ](?=\w)", "_", regex=True)
+            .str.lower()
+        )
+
+    mask = (pd.api.types.is_object_dtype(df.dtypes)) & (df.columns != "neuron_name")
+    df.loc[:, mask] = df.loc[:, mask].apply(clean_str_column)
+
+    return df
