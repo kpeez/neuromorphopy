@@ -63,10 +63,10 @@ search_and_download(query, "./data")
 ```python
 from neuromorphopy import Query
 
-query = Query()
-query.filter("species", ["mouse"])
-    .filter("brain_region", ["neocortex"])
-    .filter("cell_type", ["pyramidal"])
+query = (Query()
+         .filter("species", ["mouse"])
+         .filter("brain_region", ["neocortex"])
+         .filter("cell_type", ["pyramidal"]))
 ```
 
 ### 2. Exploring Available Fields
@@ -119,6 +119,6 @@ swc_files = list(Path("./data").glob("*.swc"))
 ## Next Steps
 
 - Learn more about [building queries](user_guide/queries.md)
-- Understand [downloading options](user_guide/downloading.md)
+- Explore [advanced operations](user_guide/advanced_operations.md)
 - Learn about [data formats](user_guide/data_formats.md)
 - Review the [API reference](api_reference/client.md)
