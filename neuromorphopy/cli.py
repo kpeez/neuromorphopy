@@ -106,6 +106,12 @@ def search(
         "--dry-run",
         help="Preview what would be downloaded without downloading",
     ),
+    group_by: str = typer.Option(
+        None,
+        "--group-by",
+        "-g",
+        help="Organize downloads by fields (comma-separated). Example: species,cell_type",
+    ),
 ) -> None:
     """Search and download neurons based on a query file."""
     try:
@@ -124,6 +130,7 @@ def search(
                 output_dir=output_dir,
                 metadata_filename=metadata_filename,
                 max_concurrent=concurrent,
+                group_by=group_by,
             )
         console.print("[bold green]✓[/] Download complete!")
     except Exception as err:
