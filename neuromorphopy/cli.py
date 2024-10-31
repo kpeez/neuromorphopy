@@ -9,7 +9,8 @@ from rich.console import Console
 from rich.table import Table
 
 from neuromorphopy import NeuroMorphoClient, Query, QueryFields, search_and_download
-from neuromorphopy.utils import NEUROMORPHO_API
+
+from .utils import NEUROMORPHO_API, get_logger, setup_logging
 
 app = typer.Typer(
     help="Search and download neuron morphologies from NeuroMorpho.org",
@@ -101,6 +102,23 @@ def search(
         min=1,
         max=50,
     ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose output",
+    ),
+    quiet: bool = typer.Option(
+        False,
+        "--quiet",
+        "-q",
+        help="Suppress all output except errors",
+    ),
+    log: bool = typer.Option(
+        False,
+        "--log",
+        help="Save logs to file in output directory",
+    ),
     dry_run: bool = typer.Option(
         False,
         "--dry-run",
@@ -110,31 +128,41 @@ def search(
         None,
         "--group-by",
         "-g",
-        help="Organize downloads by fields (comma-separated). Example: species,cell_type",
+        help="Organize downloads by fields (comma-separated)",
     ),
 ) -> None:
     """Search and download neurons based on a query file."""
-    try:
-        if output_dir is None:
-            output_dir = Path.cwd() / "neurons"
+    if output_dir is None:
+        output_dir = Path.cwd() / "neurons"
+    setup_logging(
+        verbose=verbose,
+        quiet=quiet,
+        log_to_file=log,
+        output_dir=output_dir,
+        query_file=query_file,
+    )
+    logger = get_logger()
 
+    try:
         query = Query.from_file(query_file)
+        logger.debug(f"Loaded query from {query_file}")
 
         if dry_run:
             preview_download(query, output_dir, metadata_filename)
             return
 
-        with console.status("[bold green]Downloading neurons..."):
-            search_and_download(
-                query=query,
-                output_dir=output_dir,
-                metadata_filename=metadata_filename,
-                max_concurrent=concurrent,
-                group_by=group_by,
-            )
-        console.print("[bold green]✓[/] Download complete!")
+        logger.info("Starting download...")
+        search_and_download(
+            query=query,
+            output_dir=output_dir,
+            metadata_filename=metadata_filename,
+            max_concurrent=concurrent,
+            group_by=group_by,
+        )
+        logger.info("Download complete!")
+
     except Exception as err:
-        console.print(f"[bold red]Error:[/] {err}")
+        logger.error(f"Error: {err}")
         raise typer.Exit(code=1) from err
 
 
