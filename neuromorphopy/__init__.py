@@ -1,6 +1,6 @@
 """NeuroMorpho.org API client library"""
 
-from .client import NeuroMorphoClient, search_and_download
+from .api import NeuroMorphoClient, search_and_download
 from .exceptions import ApiError, NeuroMorphoError, ValidationError
 from .query import QueryBuilder
 
