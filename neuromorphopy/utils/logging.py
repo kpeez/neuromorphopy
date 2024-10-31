@@ -24,19 +24,20 @@ def setup_logging(
     simple_fmt = logging.Formatter("%(message)s")
     if not quiet:
         console = logging.StreamHandler(sys.stdout)
-        console.setFormatter(verbose_fmt if verbose else simple_fmt)
-        console.setLevel(logging.DEBUG if verbose else logging.INFO)
+        console.setFormatter(simple_fmt)
+        console.setLevel(logging.DEBUG if verbose else logging.WARNING)
         logger.addHandler(console)
-
     if log_to_file and output_dir and query_file:
         output_dir.mkdir(parents=True, exist_ok=True)
         date_str = datetime.now().strftime("%Y-%m-%d")
         query_name = query_file.stem
         log_filename = f"{date_str}-{query_name}.log"
         log_path = output_dir / log_filename
+
         file_handler = logging.FileHandler(log_path)
         file_handler.setFormatter(verbose_fmt)
-        file_handler.setLevel(logging.DEBUG if verbose else logging.INFO)
+        # Always show detailed logs in file
+        file_handler.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
 
         logger.debug(f"Logging to file: {log_path}")
