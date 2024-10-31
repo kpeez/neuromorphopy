@@ -29,7 +29,7 @@ def setup_logging(
         logger.addHandler(console)
     if log_to_file and output_dir and query_file:
         output_dir.mkdir(parents=True, exist_ok=True)
-        date_str = datetime.now().strftime("%Y-%m-%d")
+        date_str = datetime.now().strftime("%Y-%m-%d-%H_%M")
         query_name = query_file.stem
         log_filename = f"{date_str}-{query_name}.log"
         log_path = output_dir / log_filename
