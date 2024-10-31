@@ -17,6 +17,9 @@ Options:
 - `-o, --output-dir`: Output directory (default: ./neurons)
 - `-m, --metadata-filename`: Metadata filename (default: metadata.csv)
 - `-c, --concurrent`: Max concurrent downloads (default: 20)
+- `--verbose`: Show detailed progress
+- `--quiet`: Suppress all output except errors
+- `--no-log`: Disable automatic log file creation
 
 ### Explore Fields
 

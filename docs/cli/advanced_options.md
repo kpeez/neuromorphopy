@@ -86,19 +86,16 @@ Control output verbosity:
 ```bash
 neuromorpho search query.yml --verbose     # Detailed progress
 neuromorpho search query.yml --quiet       # Minimal output
-neuromorpho search query.yml --log-file downloads.log
+neuromorpho search query.yml --no-log      # Disable automatic log file creation
 ```
 
-## Error Handling
-
-### Retry Configuration
-
-Configure download retry behavior:
+Logs are automatically saved to the output directory with timestamps:
 
 ```bash
-neuromorpho search query.yml --max-retries 5 --retry-delay 2
+# Default: creates YYYY-MM-DD-HH_MM-queryname.log in output directory
+neuromorpho search query.yml
+
+# Disable logging
+neuromorpho search query.yml --no-log
 ```
 
-## Environment Variables
-
-Configure default behavior using environment variables:
