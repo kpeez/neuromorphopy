@@ -7,13 +7,16 @@ site_author: Kyle Puhger
 nav:
   - Home: index.md
   - Getting Started: getting_started.md
+  - CLI:
+      - Basic Usage: cli/basic_usage.md
+      - Advanced Options: cli/advanced_options.md
   - User Guide:
       - Building Queries: user_guide/queries.md
       - Data Formats: user_guide/data_formats.md
   - API Reference:
-      - Client: api_reference/client.md
-      - NeuroMorpho Queries: api_reference/query.md
-      - Utilities: api_reference/utils.md
+      - Client: api/client.md
+      - NeuroMorpho Queries: api/query.md
+      - Utilities: api/utils.md
 
 theme:
   name: material
