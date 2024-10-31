@@ -10,7 +10,6 @@ nav:
   - User Guide:
       - Building Queries: user_guide/queries.md
       - Data Formats: user_guide/data_formats.md
-      - Advanced Operations: user_guide/advanced_operations.md
   - API Reference:
       - Client: api_reference/client.md
       - NeuroMorpho Queries: api_reference/query.md
