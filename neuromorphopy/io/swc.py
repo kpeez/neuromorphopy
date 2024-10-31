@@ -1,4 +1,5 @@
 """Process swc data from NeuroMorpho."""
+
 import datetime
 import io
 import re
@@ -75,7 +76,7 @@ def download_neuron_data(neuron: str, download_path: Path) -> str:
     try:
         swc_data = get_neuron_swc(neuron_name=neuron)
         file_path = f"{download_path}/{neuron}.swc"
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             header = " ".join(swc_data.columns)
             file.write(f"# {header}\n")
         swc_data.to_csv(file_path, mode="a", index=False, sep=" ", header=False)
