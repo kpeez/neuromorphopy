@@ -1,0 +1,7 @@
+filters:
+  species: ["mouse"]
+  brain_region: ["neocortex"]
+  cell_type: ["pyramidal"]
+sort: # sorting is optional
+  field: "brain_region"
+  ascending: true
