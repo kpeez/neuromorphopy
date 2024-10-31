@@ -98,4 +98,3 @@ neuromorpho search query.yml
 # Disable logging
 neuromorpho search query.yml --no-log
 ```
-
