@@ -21,6 +21,8 @@ Note:
 """
 
 import ssl
+from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import requests
@@ -55,14 +57,14 @@ adapter = WeakDHAdapter()
 session.mount("https://", adapter)
 
 
-def request_url_get(url: str) -> requests.Response:
+def request_url_get(url: str, **kwargs:Any) -> requests.Response:
     """Send GET request for a URL."""
-    response = session.get(url, verify=False)
+    response = session.get(url, verify=False, **kwargs)
     _check_response_validity(response)
     return response
 
 
-def request_url_post(query: dict[str, list[str]], **kwargs) -> requests.Response:
+def request_url_post(query: dict[str, list[str]], **kwargs:Any) -> requests.Response:
     """Send POST request."""
     url = f"{NEUROMORPHO_API}/neuron/select/"
     headers = {"Content-Type": "application/json"}
@@ -98,3 +100,25 @@ def clean_metadata_columns(metadata: pd.DataFrame) -> pd.DataFrame:
     df.loc[:, mask] = df.loc[:, mask].apply(clean_str_column)
 
     return df
+
+
+def generate_grouped_path(base_dir: Path, neuron_data: dict[str, Any], group_by: str) -> Path:
+    """Generate a grouped directory path based on neuron metadata.
+
+    Args:
+        base_dir: Base directory for the grouped structure
+        neuron_data: Dictionary containing neuron metadata
+        group_by: Comma-separated list of fields to group by
+
+    Returns:
+        Path object representing the grouped directory structure
+    """
+    path_parts = [base_dir]
+    for field in group_by.split(','):
+        field = field.strip()
+        if field in neuron_data:
+            # Sanitize the field value for filesystem use
+            safe_value = str(neuron_data[field]).replace('/', '_').replace('\\', '_')
+            path_parts.append(safe_value)
+
+    return Path(*path_parts)
