@@ -10,6 +10,7 @@ dependencies = [
   "tqdm",
   "numpy",
   "pandas",
+  "aiohttp>=3.10.10",
 ]
 
 [tool.uv]
