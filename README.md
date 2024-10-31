@@ -77,6 +77,5 @@ from neuromorphopy import Query, search_and_download
 query = Query.from_file("query.yml")
 search_and_download(query, "./data")
 ```
-<!-- TODO: set up documentation website -->
-<!-- For more advanced usage and API details, please refer to our [documentation](https://kpeez.github.io/neuromorphopy/). -->
-<!-- For advanced usage and programmatic API, see our [documentation](https://neuromorphopy.readthedocs.io/). -->
+
+For advanced usage and programmatic API, see our [documentation](https://neuromorphopy.readthedocs.io/).
