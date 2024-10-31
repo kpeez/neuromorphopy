@@ -7,8 +7,8 @@ import aiohttp
 import pandas as pd
 from tqdm.asyncio import tqdm
 
-from neuromorphopy.io.swc import get_swc_url
-from neuromorphopy.utils import NEUROMORPHO_API, clean_metadata_columns
+from .io.swc import get_swc_url
+from .utils import NEUROMORPHO_API, clean_metadata_columns, generate_grouped_path
 
 
 class NeuroMorphoClient:
@@ -109,6 +109,7 @@ class NeuroMorphoClient:
         output_dir: Path,
         max_concurrent: int | None = None,
         show_progress: bool = True,
+        group_by: str | None = None,
     ) -> None:
         """Download SWC files for multiple neurons.
 
@@ -117,18 +118,25 @@ class NeuroMorphoClient:
             output_dir: Base directory for downloads
             max_concurrent: Override default concurrent downloads
             show_progress: Whether to show progress bar
+            group_by: Optional comma-separated list of fields to group downloads by
         """
         output_dir = Path(output_dir)
         downloads_dir = output_dir / "downloads"
         downloads_dir.mkdir(parents=True, exist_ok=True)
 
-        # Use instance default if not overridden
         download_semaphore = asyncio.Semaphore(max_concurrent or self.max_concurrent)
 
         async def download_one(neuron: dict[str, Any]) -> None:
             async with download_semaphore:
                 name = neuron["neuron_name"]
-                output_path = downloads_dir / f"{name}.swc"
+
+                # Generate target path based on grouping
+                if group_by:
+                    target_dir = generate_grouped_path(downloads_dir, neuron, group_by)
+                    target_dir.mkdir(parents=True, exist_ok=True)
+                    output_path = target_dir / f"{name}.swc"
+                else:
+                    output_path = downloads_dir / f"{name}.swc"
 
                 # Skip if already downloaded
                 if output_path.exists():
@@ -140,7 +148,6 @@ class NeuroMorphoClient:
                         session.get(await self.get_swc_url(name), ssl=self.ssl_context) as response,
                     ):
                         response.raise_for_status()
-                        # Use streaming response for large files
                         content = await response.text()
                         output_path.write_text(content)
                 except Exception as e:
@@ -158,6 +165,7 @@ def search_and_download(
     output_dir: Path,
     metadata_filename: str = "neuron_metadata.csv",
     max_concurrent: int = 20,
+    group_by: str | None = None,
 ) -> None:
     """Convenience function for synchronous usage.
 
@@ -166,6 +174,7 @@ def search_and_download(
         output_dir: Base directory for all data
         metadata_filename: Name of the metadata file
         max_concurrent: Maximum concurrent operations
+        group_by: Optional comma-separated list of fields to group downloads by
     """
 
     async def _run():
@@ -174,7 +183,15 @@ def search_and_download(
             neurons = await client.search_neurons(
                 query, output_dir=output_dir, metadata_filename=metadata_filename
             )
-            await client.download_neurons(neurons, output_dir, max_concurrent=max_concurrent)
+
+            # If group_by is specified, modify the output directory structure
+            if group_by:
+                downloads_dir = output_dir / "downloads"
+                for neuron in neurons:
+                    target_dir = generate_grouped_path(downloads_dir, neuron, group_by)
+                    target_dir.mkdir(parents=True, exist_ok=True)
+
+            await client.download_neurons(neurons, output_dir, max_concurrent=max_concurrent, group_by=group_by)
             return len(neurons)
 
     count = asyncio.run(_run())
