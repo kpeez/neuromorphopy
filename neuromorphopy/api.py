@@ -81,7 +81,6 @@ class NeuroMorphoClient:
         else:
             results = await asyncio.gather(*tasks)
 
-        # Flatten results
         neurons = [neuron for page_results in results for neuron in page_results]
 
         if output_dir:
@@ -175,8 +174,6 @@ def search_and_download(
             neurons = await client.search_neurons(
                 query, output_dir=output_dir, metadata_filename=metadata_filename
             )
-
-            # Download SWC files to downloads subdirectory
             await client.download_neurons(neurons, output_dir, max_concurrent=max_concurrent)
             return len(neurons)
 
