@@ -1,6 +1,6 @@
 # Data Formats
 
-neuromorphopy works with two primary data formats:
+`neuromorphopy` works with two primary data formats:
 
 ## SWC Files
 
