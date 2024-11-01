@@ -21,8 +21,6 @@ Lightweight python package for downloading neuron morphologies from the [NeuroMo
 
 ## Installation
 
-### Simple Installation
-
 The easiest way to install is using pip:
 
 ```bash
@@ -32,7 +30,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-### Development Installation
+### Development
 
 For development work, we recommend using [uv](https://github.com/astral-sh/uv) for faster dependency resolution and better reproducibility:
 
@@ -66,16 +64,6 @@ Use the command line interface to search and download neurons:
 
 ```bash
 neuromorpho search -q query.yml -o ./data
-```
-
-Or use the Python API:
-
-```python
-from neuromorphopy import Query, search_and_download
-
-# Create query from file and download neurons
-query = Query.from_file("query.yml")
-search_and_download(query, "./data")
 ```
 
 For advanced usage and programmatic API, see our [documentation](https://neuromorphopy.readthedocs.io/).
