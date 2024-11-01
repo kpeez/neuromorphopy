@@ -1,42 +1,20 @@
 # Getting Started
 
-This guide will help you get up and running with `neuromorphopy` quickly.
+This guide will help you get up and running with `neuromorphopy` quickly. neuromorphopy helps you download and work with neuron morphology data from NeuroMorpho.org.
 
 ## Installation
 
-### Using pip
+Install using pip:
 
 ```bash
-git clone https://github.com/kpeez/neuromorphopy.git
-cd neuromorphopy
-pip install -r requirements.txt
-pip install -e .
-```
-
-### Development Installation
-
-We recommend using [uv](https://github.com/astral-sh/uv) for development:
-
-```bash
-# Install uv if needed
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Clone and install
-git clone https://github.com/kpeez/neuromorphopy.git
-cd neuromorphopy
-uv venv
-uv sync
+pip install neuromorphopy
 ```
 
 ## Basic Usage
 
-### 1. Creating Queries
+### 1. Create a Query File
 
-neuromorphopy provides multiple ways to create queries:
-
-#### Using YAML/JSON Files
-
-Create a query file:
+Create a text file named `query.yml` with your search criteria:
 
 ```yaml
 # query.yml
@@ -44,81 +22,69 @@ filters:
   species: ["mouse"]
   brain_region: ["neocortex"]
   cell_type: ["pyramidal"]
-sort:
-  field: "brain_region"
-  ascending: true
 ```
 
-Load and use the query:
+### 2. Download Neurons
 
-```python
-from neuromorphopy import Query, search_and_download
+Open your terminal and run:
 
-query = Query.from_file("query.yml")
-search_and_download(query, "./data")
+```bash
+neuromorpho search query.yml -o ./my_neurons
 ```
 
-#### Using Python API
+This will:
 
-```python
-from neuromorphopy import Query
+- Create a folder called `my_neurons`
+- Download matching neuron files (.swc format)
+- Save a metadata.csv file with information about the neurons
 
-query = (Query()
-         .filter("species", ["mouse"])
-         .filter("brain_region", ["neocortex"])
-         .filter("cell_type", ["pyramidal"]))
+### Using Dry Run Mode
+
+Before downloading the neurons, you can preview the results using the dry run mode. This is useful to ensure your query is correct and to see what will be downloaded without actually downloading the files.
+
+To use the dry run mode, run the following command:
+
+```bash
+neuromorpho search query.yml --dry-run
 ```
 
-### 2. Exploring Available Fields
+### 3. Find Available Search Options
 
-neuromorphopy provides tools to explore available query fields and values:
+To see what you can search for:
 
-```python
-from neuromorphopy import QueryFields
+```bash
+# List all brain regions
+neuromorpho explore brain_region
 
-# Get all available fields
-fields = QueryFields.get_fields()
-print(fields)
+# List all species
+neuromorpho explore species
 
-# Get valid values for a specific field
-brain_regions = QueryFields.get_values("brain_region")
-print(brain_regions)
-
-# Get complete reference
-reference = QueryFields.describe()
-print(reference)
+# List all cell types
+neuromorpho explore cell_type
 ```
 
-### 3. Downloading Neurons
+## Understanding the Downloaded Data
 
-```python
-from neuromorphopy import search_and_download
+After downloading, you'll have:
 
-# Download neurons to specified directory
-search_and_download(query, "./data")
-```
+1. A collection of .swc files (one per neuron) containing 3D neuron reconstructions
+2. A metadata.csv file containing information about each downloaded neuron
 
-The downloaded data will include:
+## Common Options
 
-- SWC files containing neuron morphologies
-- Metadata CSV file with neuron information
+```bash
+# Download fewer neurons at once (for slower connections)
+neuromorpho search query.yml -c 5
 
-### 4. Working with Downloaded Data
+# See more detailed progress
+neuromorpho search query.yml --verbose
 
-```python
-import pandas as pd
-from pathlib import Path
-
-# Load metadata
-metadata = pd.read_csv("./data/metadata.csv")
-
-# Access SWC files
-swc_files = list(Path("./data").glob("*.swc"))
+# Preview what will be downloaded
+neuromorpho search query.yml --dry-run
 ```
 
 ## Next Steps
 
-- Learn more about [building queries](user_guide/queries.md)
-- Explore [advanced operations](user_guide/advanced_operations.md)
-- Learn about [data formats](user_guide/data_formats.md)
-- Review the [API reference](api_reference/client.md)
+- See [detailed CLI usage](cli/basic_usage.md) for more commands
+- Learn about [advanced CLI features](cli/advanced_options.md)
+- Understand [neuron data formats](user_guide/data_formats.md)

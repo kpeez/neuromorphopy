@@ -79,5 +79,5 @@ sort:  # optional
 ## Next Steps
 
 - Learn about [advanced query options](advanced_options.md)
-- Explore the [Python API](../api) for programmatic usage
+- Explore the [Python API](../api/client.md) for programmatic usage
 - Review [data formats](../user_guide/data_formats.md)
