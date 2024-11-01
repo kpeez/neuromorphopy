@@ -882,13 +882,14 @@ wheels = [
 
 [[package]]
 name = "neuromorphopy"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
-    { name = "numpy" },
     { name = "pandas" },
     { name = "pydantic" },
+    { name = "pyyaml" },
+    { name = "requests" },
     { name = "tqdm" },
     { name = "typer" },
 ]
@@ -913,10 +914,11 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.10.10" },
-    { name = "numpy" },
-    { name = "pandas" },
+    { name = "pandas", specifier = ">=2.0.0" },
     { name = "pydantic", specifier = ">=2.9.2" },
-    { name = "tqdm" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "requests", specifier = ">=2.32.3" },
+    { name = "tqdm", specifier = ">=4.66.6" },
     { name = "typer", specifier = ">=0.12.5" },
 ]
 
