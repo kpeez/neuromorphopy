@@ -1,7 +1,7 @@
 # neuromorphopy
 
 [![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
-[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://kpeez.github.io/neuromorphopy/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://neuromorphopy.readthedocs.io/)
 
 Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
 
@@ -21,13 +21,10 @@ Lightweight python package for downloading neuron morphologies from the [NeuroMo
 
 ## Installation
 
-The easiest way to install is using pip:
+You can install neuromorphopy directly from PyPI:
 
 ```bash
-git clone https://github.com/kpeez/neuromorphopy.git
-cd neuromorphopy
-pip install -r requirements.txt
-pip install -e .
+pip install neuromorphopy
 ```
 
 ### Development
@@ -66,4 +63,4 @@ Use the command line interface to search and download neurons:
 neuromorpho search -q query.yml -o ./data
 ```
 
-For advanced usage and programmatic API, see our [documentation](https://neuromorphopy.readthedocs.io/).
+For more detailed usage, see our [documentation](getting_started.md).
