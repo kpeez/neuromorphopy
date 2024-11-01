@@ -1,6 +1,6 @@
 # Building Queries
 
-neuromorphopy provides flexible ways to build and validate queries for searching the NeuroMorpho database. This guide covers all query-building approaches and advanced features.
+`neuromorphopy` provides flexible ways to build and validate queries for searching the NeuroMorpho database. This guide covers all query-building approaches and advanced features.
 
 ## Query Structure
 
@@ -50,7 +50,7 @@ query = (Query()
 
 ## Field Validation
 
-neuromorphopy automatically validates all fields and values against the NeuroMorpho API. The `QueryFields` class provides utilities for exploring available options:
+`neuromorphopy` automatically validates all fields and values against the NeuroMorpho API. The `QueryFields` class provides utilities for exploring available options:
 
 ```python
 from neuromorphopy import QueryFields
