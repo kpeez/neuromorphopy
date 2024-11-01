@@ -1,6 +1,6 @@
 # Basic CLI Usage
 
-neuromorphopy provides a simple command-line interface for downloading neuron morphologies.
+`neuromorphopy` provides a simple command-line interface for downloading neuron morphologies.
 
 ## Commands
 
@@ -20,6 +20,20 @@ Options:
 - `--verbose`: Show detailed progress
 - `--quiet`: Suppress all output except errors
 - `--no-log`: Disable automatic log file creation
+
+### Validate Queries
+
+Validate your query files before downloading:
+
+```bash
+neuromorpho validate query.yml
+```
+
+Note: Validation happens automatically when running the search command. Use the validate command to check queries without starting a download.
+
+Options:
+
+- `--quiet`: Suppress detailed validation output
 
 ### Explore Fields
 
