@@ -6,5 +6,5 @@ title: Home
 
 ## Quick Links
 
-- [API Reference](api_reference/client.md)
+- [API Reference](api/client.md)
 - [GitHub Repository](https://github.com/kpeez/neuromorphopy/)
