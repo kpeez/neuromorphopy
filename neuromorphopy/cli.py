@@ -5,6 +5,7 @@ import asyncio
 from pathlib import Path
 
 import typer
+import yaml
 from rich.console import Console
 from rich.table import Table
 
@@ -144,6 +145,10 @@ def search(
     logger = get_logger()
 
     try:
+        if not quiet:
+            console.print("[cyan]Validating query...[/cyan]")
+        validate(query_file, quiet=not verbose)
+
         query = Query.from_file(query_file)
         logger.debug(f"Loaded query from {query_file}")
 
@@ -191,6 +196,98 @@ def explore(
             console.print(table)
     except Exception as err:
         console.print(f"[bold red]Error:[/] {err}")
+        raise typer.Exit(code=1) from err
+
+
+def _validate_file_format(query_file: Path, table: Table) -> dict:
+    """Validate the basic file format and structure."""
+    with open(query_file, encoding="utf-8") as f:
+        raw_query = yaml.safe_load(f)
+
+    if not isinstance(raw_query, dict):
+        table.add_row("File Format", "✗", "Query must be a dictionary")
+        raise ValueError("Query must be a dictionary")
+
+    if "filters" not in raw_query:
+        table.add_row("Query Structure", "✗", "No filters specified")
+        raise ValueError("Query must contain filters")
+
+    table.add_row("File Format", "✓", f"Valid {query_file.suffix} format")
+    table.add_row("Query Structure", "✓", "Valid query structure")
+
+    return raw_query
+
+
+def _validate_sort_config(raw_query: dict, table: Table) -> None:
+    """Validate sort configuration if present."""
+    if "sort" not in raw_query:
+        return
+
+    sort_config = raw_query["sort"]
+    if not isinstance(sort_config, dict) or "field" not in sort_config:
+        table.add_row("Sort Config", "✗", "Invalid sort configuration")
+        raise ValueError("Invalid sort configuration")
+
+    sort_field = sort_config["field"]
+    if sort_field not in QueryFields.get_fields():
+        table.add_row("Sort Config", "✗", f"Invalid sort field: {sort_field}")
+        raise ValueError(f"Sort field '{sort_field}' is not a valid field")
+
+    table.add_row("Sort Config", "✓", f"Valid sort configuration using field: {sort_field}")
+
+
+def _validate_fields_and_values(query: dict, table: Table) -> None:
+    """Validate all fields and their values."""
+    invalid_fields = []
+    for field, values in query.items():
+        if field not in QueryFields.get_fields():
+            continue  # Skip non-field keys like sort configuration
+
+        valid_values = QueryFields.get_values(field)
+        invalid_values = set(values) - valid_values
+        if invalid_values:
+            invalid_fields.append(f"{field}: invalid values {invalid_values}")
+
+    if invalid_fields:
+        table.add_row("Fields & Values", "✗", f"Invalid: {', '.join(invalid_fields)}")
+        raise ValueError("Invalid fields or values found")
+
+    table.add_row("Fields & Values", "✓", "All fields and values are valid")
+
+
+@app.command()
+def validate(
+    query_file: Path = typer.Argument(..., help="Path to YAML/JSON query file"),  # noqa: B008
+    quiet: bool = typer.Option(False),
+) -> tuple[bool, Table]:
+    """Validate a query file without downloading."""
+    console = Console()
+
+    table = Table(title="Query Validation Results")
+    table.add_column("Check", style="cyan")
+    table.add_column("Status", style="green")
+    table.add_column("Details", style="white")
+
+    try:
+        # Run all validation steps
+        raw_query = _validate_file_format(query_file, table)
+        _validate_sort_config(raw_query, table)
+
+        # Validate processed query
+        query = Query.from_file(query_file)
+        _validate_fields_and_values(query, table)
+
+        if not quiet:
+            console.print(table)
+
+        console.print("\n[green]Query validation successful! ✓[/green]")
+
+        return True, table
+
+    except Exception as err:
+        if not quiet:
+            console.print(table)
+            console.print(f"\n[bold red]Validation failed: {err}[/bold red]")
         raise typer.Exit(code=1) from err
 
 

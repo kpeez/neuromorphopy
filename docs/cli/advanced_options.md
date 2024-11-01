@@ -36,47 +36,38 @@ neuromorpho search query.yml -o ./neurons --group-by species,cell_type
 
 ## Query Validation
 
+`neuromorphopy` provides comprehensive query validation to ensure your queries are correct before downloading.
+
+### Validation Command
+
+Validate a query file:
+
+```bash
+neuromorpho validate query.yml
+```
+
+The validator checks:
+
+- File format and structure
+- Query field names
+- Field values
+- Sort configuration (if present)
+
+### Automatic Validation
+
+Validation runs automatically when using the search command:
+
+```bash
+neuromorpho search query.yml  # Includes validation
+neuromorpho search query.yml --verbose  # Shows detailed validation
+```
+
 ### Dry Run Mode
 
 Preview results without downloading:
 
 ```bash
 neuromorpho search query.yml --dry-run
-```
-
-### Field Validation
-
-Validate specific fields or values:
-
-```bash
-neuromorpho validate species "mouse"
-neuromorpho validate brain_region "neocortex,hippocampus"
-```
-
-## Complex Queries
-
-### Multiple Value Filters
-
-Filter using multiple values:
-
-```yaml
-filters:
-  species: ["mouse", "rat"]
-  brain_region: ["neocortex", "hippocampus"]
-  cell_type: ["pyramidal"]
-```
-
-### Combining Conditions
-
-Use AND/OR operations:
-
-```yaml
-filters:
-  AND:
-    species: ["mouse"]
-    cell_type: ["pyramidal"]
-  OR:
-    brain_region: ["neocortex", "hippocampus"]
 ```
 
 ## Progress and Logging

@@ -24,6 +24,20 @@ filters:
   cell_type: ["pyramidal"]
 ```
 
+### 2. Validate Queries
+
+Validate your query files before downloading:
+
+```bash
+neuromorpho validate query.yml
+```
+
+Note: Validation happens automatically when running the search command. Use the validate command to check queries without starting a download.
+
+Options:
+
+- `--quiet`: Suppress detailed validation output
+
 ### 2. Download Neurons
 
 Open your terminal and run:

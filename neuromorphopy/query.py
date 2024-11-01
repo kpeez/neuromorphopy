@@ -6,6 +6,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field
 
+from .exceptions import ApiError, ValidationError
 from .utils import NEUROMORPHO_API, request_url_get
 
 
@@ -48,7 +49,9 @@ class Query:
 
     def sort(self, field: str, ascending: bool = True) -> "Query":
         """Add sorting with validation."""
-        self._config.validate_field(field, ["dummy"])
+        if field not in QueryFields.get_fields():
+            raise ValueError(f"Invalid field: {field}")
+
         self._config = QueryConfig(
             filters=self._config.filters, sort=QuerySort(field=field, ascending=ascending)
         )
@@ -78,10 +81,13 @@ class QueryFields:
     def get_values(cls, field: str) -> set[str]:
         """Get valid values for a specific field."""
         if field not in cls.get_fields():
-            raise ValueError(f"Invalid field: {field}")
+            raise ValidationError(f"Invalid field: {field}")
 
-        response = request_url_get(f"{NEUROMORPHO_API}/neuron/fields/{field}")
-        return set(response.json()["fields"])
+        try:
+            response = request_url_get(f"{NEUROMORPHO_API}/neuron/fields/{field}")
+            return set(response.json()["fields"])
+        except Exception as err:
+            raise ApiError(f"Failed to fetch values for field {field}: {err!s}") from err
 
     @classmethod
     def describe(cls) -> dict[str, set[str]]:
