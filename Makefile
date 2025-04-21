@@ -36,7 +36,6 @@ docs-test: ## Test if documentation can be built without warnings or errors
 update: ## Update pre-commit hooks
 	@echo "⚙️ Updating dependencies and pre-commit hooks"
 	@uv lock --upgrade
-	$(MAKE) requirements
 	@uv run pre-commit autoupdate
 
 help:
