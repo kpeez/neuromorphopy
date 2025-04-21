@@ -3,9 +3,11 @@
 [![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://neuromorphopy.readthedocs.io/)
 
-Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
+<p align="left">
+  <img src="docs/assets/logo.png" width="350" alt="Neuromorphopy logo">
+</p>
 
-- **Github repository**: <https://github.com/kpeez/neuromorphopy/>
+**neuromorphopy** is a lightweight standalone python CLI tool for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
 
 ## Features
 
@@ -15,11 +17,9 @@ Lightweight python package for downloading neuron morphologies from the [NeuroMo
 - Automatic metadata handling
 - Support for both synchronous and asynchronous operations
 
-## Requirements
-
-- Python >= 3.11
-
 ## Installation
+
+`neuromorphopy` is supported for python >= 3.11.
 
 **Using `uv` (Recommended):**
 
