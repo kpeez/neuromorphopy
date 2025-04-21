@@ -21,25 +21,26 @@ Lightweight python package for downloading neuron morphologies from the [NeuroMo
 
 ## Installation
 
-You can install neuromorphopy directly from PyPI:
+**Using `uv` (Recommended):**
+
+The easiest way to install `neuromorphopy` as a standalone CLI tool is with [`uv`](https://github.com/astral-sh/uv):
 
 ```bash
-pip install neuromorphopy
+# install the latest release
+uv tool install neuromorphopy
+# or install the latest development version from GitHub
+uv tool install git+https://github.com/kpeez/neuromorphopy.git
 ```
 
-### Development
+**Using `pip`:**
 
-For development work, we recommend using [uv](https://github.com/astral-sh/uv) for faster dependency resolution and better reproducibility:
+Alternatively, you can install `neuromorphopy` into your project environment using `pip`:
 
 ```bash
-# Install uv if you haven't already
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Clone and install
-git clone https://github.com/kpeez/neuromorphopy.git
-cd neuromorphopy
-uv venv
-uv sync
+# install the latest release
+pip install neuromorphopy
+# or install the latest development version directly from GitHub
+pip install git+https://github.com/kpeez/neuromorphopy.git
 ```
 
 ## Usage
