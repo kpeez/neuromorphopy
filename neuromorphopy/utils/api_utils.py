@@ -26,45 +26,48 @@ from typing import Any
 
 import pandas as pd
 import requests
+import urllib3
 from requests.adapters import HTTPAdapter
 from urllib3.exceptions import InsecureRequestWarning
+from urllib3.poolmanager import PoolManager
 from urllib3.util.ssl_ import create_urllib3_context
 
-# Constants
 NEUROMORPHO = "https://neuromorpho.org"
 NEUROMORPHO_API = "https://neuromorpho.org/api"
 NEURON_INFO = f"{NEUROMORPHO}/neuron_info.jsp?neuron_name="
 
 
 class WeakDHAdapter(HTTPAdapter):
-    def init_poolmanager(self, *args, **kwargs):
+    def init_poolmanager(
+        self, connections: int, maxsize: int, block: bool = False, **pool_kwargs: Any
+    ) -> PoolManager:
         context = create_urllib3_context()
-        # Disable ALL verification
+        # disable ALL verification
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
         context.set_ciphers("DEFAULT@SECLEVEL=1")
-        kwargs["ssl_context"] = context
-        return super().init_poolmanager(*args, **kwargs)
+        pool_kwargs["ssl_context"] = context
+        return super().init_poolmanager(connections, maxsize, block, **pool_kwargs)
 
 
-# Disable SSL verification warnings globally
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# disable SSL verification warnings globally
+urllib3.disable_warnings(InsecureRequestWarning)
 
-# Create session with custom adapter
+# create session with custom adapter
 session = requests.Session()
 session.verify = False
 adapter = WeakDHAdapter()
 session.mount("https://", adapter)
 
 
-def request_url_get(url: str, **kwargs:Any) -> requests.Response:
+def request_url_get(url: str, **kwargs: Any) -> requests.Response:
     """Send GET request for a URL."""
     response = session.get(url, verify=False, **kwargs)
     _check_response_validity(response)
     return response
 
 
-def request_url_post(query: dict[str, list[str]], **kwargs:Any) -> requests.Response:
+def request_url_post(query: dict[str, list[str]], **kwargs: Any) -> requests.Response:
     """Send POST request."""
     url = f"{NEUROMORPHO_API}/neuron/select/"
     headers = {"Content-Type": "application/json"}
@@ -97,7 +100,8 @@ def clean_metadata_columns(metadata: pd.DataFrame) -> pd.DataFrame:
         )
 
     mask = (pd.api.types.is_object_dtype(df.dtypes)) & (df.columns != "neuron_name")
-    df.loc[:, mask] = df.loc[:, mask].apply(clean_str_column)
+    for col_name in df.columns[mask]:
+        df[col_name] = clean_str_column(df[col_name])
 
     return df
 
@@ -113,12 +117,12 @@ def generate_grouped_path(base_dir: Path, neuron_data: dict[str, Any], group_by:
     Returns:
         Path object representing the grouped directory structure
     """
-    path_parts = [base_dir]
-    for field in group_by.split(','):
+    path_parts: list[Path] = [base_dir]
+    for field in group_by.split(","):
         field = field.strip()
         if field in neuron_data:
-            # Sanitize the field value for filesystem use
-            safe_value = str(neuron_data[field]).replace('/', '_').replace('\\', '_')
-            path_parts.append(safe_value)
+            # sanitize the field value for filesystem use
+            safe_value = str(neuron_data[field]).replace("/", "_").replace("\\", "_")
+            path_parts.append(Path(safe_value))
 
     return Path(*path_parts)

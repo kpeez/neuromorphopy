@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 import yaml
 from pydantic import BaseModel, Field
@@ -57,9 +58,9 @@ class Query:
         )
         return self
 
-    def build(self) -> dict[str, list[str]]:
+    def build(self) -> dict[str, Any]:
         """Build the final query dictionary."""
-        query = dict(self._config.filters)
+        query: dict[str, Any] = dict(self._config.filters)
         if self._config.sort:
             query["_sort"] = {"field": self._config.sort.field, "order": self._config.sort.order}
 
@@ -141,6 +142,5 @@ class QueryConfig(BaseModel):
         invalid_values = set(values) - valid_values
         if invalid_values:
             raise ValueError(
-                f"Invalid values for {field}: {invalid_values}\n"
-                f"Valid values are: {valid_values}"
+                f"Invalid values for {field}: {invalid_values}\nValid values are: {valid_values}"
             )
