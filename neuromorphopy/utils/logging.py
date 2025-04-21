@@ -18,9 +18,7 @@ def setup_logging(
     logger.setLevel(logging.DEBUG if verbose else logging.INFO)
     logger.handlers.clear()
 
-    verbose_fmt = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    verbose_fmt = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     simple_fmt = logging.Formatter("%(message)s")
     if not quiet:
         console = logging.StreamHandler(sys.stdout)
@@ -41,6 +39,7 @@ def setup_logging(
         logger.addHandler(file_handler)
 
         logger.debug(f"Logging to file: {log_path}")
+
 
 def get_logger() -> logging.Logger:
     """Get the neuromorphopy logger."""
