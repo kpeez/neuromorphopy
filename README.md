@@ -48,7 +48,7 @@ pip install git+https://github.com/kpeez/neuromorphopy.git
 Create a query file (YAML or JSON) to specify what neurons you want:
 
 ```yaml
-# query.yml
+# query.yaml
 filters:
   species: ["mouse"]
   brain_region: ["neocortex"]
@@ -61,7 +61,7 @@ sort: # sorting is optional
 To download all neurons, you can use an empty query:
 
 ```yaml
-# query.yml
+# query.yaml
 filters: {}
 ```
 
@@ -73,10 +73,10 @@ neuromorpho fields
 neuromorpho fields species
 
 # Preview what a query would download
-neuromorpho preview -q query.yml
+neuromorpho preview -q query.yaml
 
 # Download neurons matching the query
-neuromorpho download -q query.yml -o ./data
+neuromorpho download -q query.yaml -o ./data
 ```
 
 For more detailed usage, see our [documentation](docs/getting_started.md).

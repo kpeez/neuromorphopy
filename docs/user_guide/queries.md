@@ -16,7 +16,7 @@ A query consists of two main components:
 The simplest way to create a query is using a YAML or JSON file:
 
 ```yaml
-# query.yml
+# query.yaml
 filters:
   species: ["mouse"]
   brain_region: ["neocortex"]
@@ -31,7 +31,7 @@ Load the query using:
 ```python
 from neuromorphopy import Query
 
-query = Query.from_file("query.yml")
+query = Query.from_file("query.yaml")
 ```
 
 ### Using the Python API
