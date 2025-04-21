@@ -5,11 +5,10 @@ check_uv: # install `uv` if not installed
 		echo "uv is not installed, installing now..."; \
 		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
-	@uv self update
 
 install: check_uv ## Install the virtual environment and  pre-commit hooks
 	@echo "📦 Creating virtual environment"
-	@uv sync --all-extras --locked
+	@uv sync --all-extras --locked --python=3.13
 	@echo "🛠️ Installing developer tools..."
 	@uv run pre-commit install
 
