@@ -57,10 +57,25 @@ sort: # sorting is optional
   ascending: true
 ```
 
-Use the command line interface to search and download neurons:
+To download all neurons, you can use an empty query:
 
-```bash
-neuromorpho search -q query.yml -o ./data
+```yaml
+# query.yml
+filters: {}
 ```
 
-For more detailed usage, see our [documentation](getting_started.md).
+Use the command line interface to explore available fields, preview a query, or download neurons:
+
+```bash
+# Explore available query fields and values
+neuromorpho fields
+neuromorpho fields species
+
+# Preview what a query would download
+neuromorpho preview -q query.yml
+
+# Download neurons matching the query
+neuromorpho download -q query.yml -o ./data
+```
+
+For more detailed usage, see our [documentation](docs/getting_started.md).

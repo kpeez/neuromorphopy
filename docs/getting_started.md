@@ -14,7 +14,7 @@ pip install neuromorphopy
 
 ### 1. Create a Query File
 
-Create a text file named `query.yml` with your search criteria:
+Create a text file named `query.yml` (or `.json`) with your search criteria:
 
 ```yaml
 # query.yml
@@ -22,60 +22,61 @@ filters:
   species: ["mouse"]
   brain_region: ["neocortex"]
   cell_type: ["pyramidal"]
+sort: # optional
+  field: "neuron_id"
+  ascending: false
 ```
 
-### 2. Validate Queries
+To download all neurons, use an empty filter set:
 
-Validate your query files before downloading:
-
-```bash
-neuromorpho validate query.yml
+```yaml
+# query_all.yml
+filters: {}
 ```
 
-Note: Validation happens automatically when running the search command. Use the validate command to check queries without starting a download.
+### 2. Explore Search Fields
 
-Options:
-
-- `--quiet`: Suppress detailed validation output
-
-### 2. Download Neurons
-
-Open your terminal and run:
+Before writing your query, you might want to see what fields and values are available. Use the `fields` command:
 
 ```bash
-neuromorpho search query.yml -o ./my_neurons
+# List all available query fields
+neuromorpho fields
+
+# List valid values for a specific field (e.g., species)
+neuromorpho fields species
+```
+
+### 3. Preview Download (Optional)
+
+Before downloading potentially thousands of files, you can preview what your query will match using the `preview` command:
+
+```bash
+neuromorpho preview -q query.yml
+```
+
+This will validate your query file and show you:
+
+- The total number of neurons matching your criteria.
+- The target output directory and metadata filename.
+- A few sample neuron names that would be downloaded.
+
+This command does *not* download any neuron files or create log files.
+
+### 4. Download Neurons
+
+Once your query is ready, use the `download` command:
+
+```bash
+neuromorpho download -q query.yml -o ./my_neurons
 ```
 
 This will:
 
-- Create a folder called `my_neurons`
-- Download matching neuron files (.swc format)
-- Save a metadata.csv file with information about the neurons
-
-### Using Dry Run Mode
-
-Before downloading the neurons, you can preview the results using the dry run mode. This is useful to ensure your query is correct and to see what will be downloaded without actually downloading the files.
-
-To use the dry run mode, run the following command:
-
-```bash
-neuromorpho search query.yml --dry-run
-```
-
-### 3. Find Available Search Options
-
-To see what you can search for:
-
-```bash
-# List all brain regions
-neuromorpho explore brain_region
-
-# List all species
-neuromorpho explore species
-
-# List all cell types
-neuromorpho explore cell_type
-```
+- Validate your query file.
+- Create the output directory (`./my_neurons` in this case, defaults to `./neurons`).
+- Download all matching neuron SWC files into the `downloads/` subdirectory.
+- Save a `metadata.csv` file in the output directory with information about the downloaded neurons.
+- Create a log file in the output directory.
 
 ## Understanding the Downloaded Data
 
@@ -84,17 +85,29 @@ After downloading, you'll have:
 1. A collection of .swc files (one per neuron) containing 3D neuron reconstructions
 2. A metadata.csv file containing information about each downloaded neuron
 
-## Common Options
+## Common Options for `download`
 
 ```bash
-# Download fewer neurons at once (for slower connections)
-neuromorpho search query.yml -c 5
+# Specify output directory
+neuromorpho download query.yml -o ./my_data
 
-# See more detailed progress
-neuromorpho search query.yml --verbose
+# Change metadata filename
+neuromorpho download query.yml -m neuron_info.csv
 
-# Preview what will be downloaded
-neuromorpho search query.yml --dry-run
+# Download fewer neurons concurrently (default 20)
+neuromorpho download query.yml -c 5
+
+# Group downloads by species and brain region
+neuromorpho download query.yml -g species,brain_region
+
+# See more detailed progress output
+neuromorpho download query.yml --verbose
+
+# Suppress non-error output
+neuromorpho download query.yml --quiet
+
+# Disable writing log file
+neuromorpho download query.yml --no-log
 ```
 
 ## Next Steps
