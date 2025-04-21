@@ -4,11 +4,29 @@ This guide will help you get up and running with `neuromorphopy` quickly. neurom
 
 ## Installation
 
-Install using pip:
+**Using `uv` (Recommended):**
+
+The easiest way to install `neuromorphopy` as a standalone CLI tool is with [`uv`](https://github.com/astral-sh/uv):
 
 ```bash
-pip install neuromorphopy
+# install the latest release
+uv tool install neuromorphopy
+# or install the latest development version from GitHub
+uv tool install git+https://github.com/kpeez/neuromorphopy.git
 ```
+
+**Using `pip`:**
+
+Alternatively, you can install `neuromorphopy` into your project environment using `pip`:
+
+```bash
+# install the latest release
+pip install neuromorphopy
+# or install the latest development version directly from GitHub
+pip install git+https://github.com/kpeez/neuromorphopy.git
+```
+
+## Configuration
 
 ## Basic Usage
 
