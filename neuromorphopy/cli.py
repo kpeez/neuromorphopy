@@ -3,6 +3,7 @@
 
 import asyncio
 from pathlib import Path
+from typing import Any
 
 import typer
 import yaml
@@ -11,7 +12,7 @@ from rich.table import Table
 
 from neuromorphopy import NeuroMorphoClient, Query, QueryFields, search_and_download
 
-from .utils import NEUROMORPHO_API, get_logger, setup_logging
+from .utils import get_logger, setup_logging
 
 app = typer.Typer(
     help="Search and download neuron morphologies from NeuroMorpho.org",
@@ -21,31 +22,36 @@ console = Console()
 
 
 async def _preview_download(
-    query_dict: dict[str, list[str]],
+    query_dict: dict[str, Any],
     output_dir: Path,
     metadata_filename: str,
 ) -> None:
     """Async preview function."""
     async with NeuroMorphoClient() as client:
-        # Get total count first
-        query_str = " ".join(f"{field}:{','.join(values)}" for field, values in query_dict.items())
-        params = {"page": 0, "size": 1, "q": query_str}
+        # get endpoint, total count, and query string using the shared helper
+        try:
+            endpoint, total, query_str = await client._get_search_details(query_dict)
+        except Exception as e:
+            console.print(f"[bold red]Error fetching total count during preview:[/] {e}")
+            raise
 
-        async with client.session.get(
-            f"{NEUROMORPHO_API}/neuron/select", params=params
-        ) as response:
-            response.raise_for_status()
-            data = await response.json()
-            total = data["page"]["totalElements"]
+        params_sample: dict[str, Any] = {"page": 0, "size": 3}
+        if query_str is not None:
+            params_sample["q"] = query_str
 
-        # Get sample
-        params["size"] = 3
-        async with client.session.get(
-            f"{NEUROMORPHO_API}/neuron/select", params=params
-        ) as response:
-            response.raise_for_status()
-            data = await response.json()
-            sample = data["_embedded"]["neuronResources"]
+        # add sort parameter if it exists in the original query
+        sort_info = query_dict.get("_sort")
+        if isinstance(sort_info, dict) and "field" in sort_info and "order" in sort_info:
+            params_sample["sort"] = f"{sort_info['field']},{sort_info['order']}"
+
+        try:
+            async with client.session.get(endpoint, params=params_sample) as response:
+                response.raise_for_status()
+                data = await response.json()
+                sample = data.get("_embedded", {}).get("neuronResources", [])
+        except Exception as e:
+            console.print(f"[bold red]Error fetching sample during preview:[/] {e}")
+            sample = []  # Set sample to empty list on error
 
         table = Table(title="Download Preview")
         table.add_column("Property", style="cyan")
@@ -64,7 +70,7 @@ async def _preview_download(
         console.print(table)
 
 
-def preview_download(query: Query, output_dir: Path, metadata_filename: str) -> None:
+def preview_download(query: dict[str, Any], output_dir: Path, metadata_filename: str) -> None:
     """Synchronous wrapper for preview."""
     try:
         asyncio.run(_preview_download(query, output_dir, metadata_filename))
@@ -73,8 +79,87 @@ def preview_download(query: Query, output_dir: Path, metadata_filename: str) -> 
         raise typer.Exit(code=1) from err
 
 
-@app.command()
-def search(
+@app.command("fields")
+def fields(
+    field: str | None = typer.Argument(
+        None,
+        help="Show valid values for a specific field",
+    ),
+) -> None:
+    """Explore available query fields and their values."""
+    try:
+        if field:
+            values = QueryFields.get_values(field)
+            table = Table(title=f"Valid values for {field}")
+            table.add_column("Value", style="cyan")
+            for value in sorted(values):
+                table.add_row(str(value))
+            console.print(table)
+        else:
+            fields = QueryFields.get_fields()
+            table = Table(title="Available query fields")
+            table.add_column("Available fields for filtering", style="green")
+            for f in sorted(fields):
+                table.add_row(f)
+            console.print(table)
+    except Exception as err:
+        console.print(f"[bold red]Error:[/] {err}")
+        raise typer.Exit(code=1) from err
+
+
+@app.command("preview")
+def preview(
+    query_file: Path = typer.Argument(  # noqa: B008
+        ...,
+        help="Path to YAML/JSON query file",
+        exists=True,
+        dir_okay=False,
+        resolve_path=True,
+    ),
+    output_dir: Path = typer.Option(  # noqa: B008
+        None,
+        "--output-dir",
+        "-o",
+        help="Directory where data *would* be saved (for preview)",
+        resolve_path=True,
+    ),
+    metadata_filename: str = typer.Option(
+        "metadata.csv",
+        "--metadata-filename",
+        "-m",
+        help="Name for the metadata CSV file (for preview)",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose output during validation",
+    ),
+    quiet: bool = typer.Option(
+        False,
+        "--quiet",
+        "-q",
+        help="Suppress validation output except errors",
+    ),
+) -> None:
+    """Validate a query file and preview the download without downloading."""
+    output_dir = output_dir if output_dir is not None else Path.cwd() / "neurons"
+
+    try:
+        if not quiet:
+            console.print("[cyan]Validating query...[/cyan]")
+        validate(query_file, quiet=not verbose)
+        query = Query.from_file(query_file)
+        preview_download(query, output_dir, metadata_filename)
+
+    except Exception as err:
+        if not isinstance(err, typer.Exit):
+            raise typer.Exit(code=1) from err
+        raise err
+
+
+@app.command("download")
+def download(
     query_file: Path = typer.Argument(  # noqa: B008
         ...,
         help="Path to YAML/JSON query file",
@@ -120,11 +205,6 @@ def search(
         "--no-log",
         help="Disable writing to log file",
     ),
-    dry_run: bool = typer.Option(
-        False,
-        "--dry-run",
-        help="Preview what would be downloaded without downloading",
-    ),
     group_by: str = typer.Option(
         None,
         "--group-by",
@@ -132,29 +212,24 @@ def search(
         help="Organize downloads by fields (comma-separated)",
     ),
 ) -> None:
-    """Search and download neurons based on a query file."""
-    if output_dir is None:
-        output_dir = Path.cwd() / "neurons"
-    setup_logging(
-        verbose=verbose,
-        quiet=quiet,
-        log_to_file=not no_log,
-        output_dir=output_dir,
-        query_file=query_file,
-    )
-    logger = get_logger()
+    """Search NeuroMorpho.org and download matching neurons based on a query file."""
+    output_dir = output_dir if output_dir is not None else Path.cwd() / "neurons"
 
     try:
         if not quiet:
             console.print("[cyan]Validating query...[/cyan]")
         validate(query_file, quiet=not verbose)
-
         query = Query.from_file(query_file)
-        logger.debug(f"Loaded query from {query_file}")
 
-        if dry_run:
-            preview_download(query, output_dir, metadata_filename)
-            return
+        setup_logging(
+            verbose=verbose,
+            quiet=quiet,
+            log_to_file=not no_log,
+            output_dir=output_dir,
+            query_file=query_file,
+        )
+        logger = get_logger()
+        logger.debug(f"Loaded query from {query_file}")
 
         logger.info("Starting download...")
         search_and_download(
@@ -168,34 +243,6 @@ def search(
 
     except Exception as err:
         logger.error(f"Error: {err}")
-        raise typer.Exit(code=1) from err
-
-
-@app.command()
-def explore(
-    field: str | None = typer.Argument(
-        None,
-        help="Show valid values for a specific field",
-    ),
-) -> None:
-    """Explore available query fields and their values."""
-    try:
-        if field:
-            values = QueryFields.get_values(field)
-            table = Table(title=f"Valid values for {field}")
-            table.add_column("Value", style="cyan")
-            for value in sorted(values):
-                table.add_row(str(value))
-            console.print(table)
-        else:
-            fields = QueryFields.get_fields()
-            table = Table(title="Available query fields")
-            table.add_column("Field", style="green")
-            for f in sorted(fields):
-                table.add_row(f)
-            console.print(table)
-    except Exception as err:
-        console.print(f"[bold red]Error:[/] {err}")
         raise typer.Exit(code=1) from err
 
 
@@ -255,32 +302,31 @@ def _validate_fields_and_values(query: dict, table: Table) -> None:
     table.add_row("Fields & Values", "✓", "All fields and values are valid")
 
 
-@app.command()
 def validate(
-    query_file: Path = typer.Argument(..., help="Path to YAML/JSON query file"),  # noqa: B008
-    quiet: bool = typer.Option(False),
+    query_file: Path,
+    quiet: bool = False,
 ) -> tuple[bool, Table]:
-    """Validate a query file without downloading."""
-    console = Console()
+    """Validate a query file's format, fields, and values.
 
+    Raises:
+        typer.Exit: If validation fails.
+    """
+    console = Console()
     table = Table(title="Query Validation Results")
     table.add_column("Check", style="cyan")
     table.add_column("Status", style="green")
     table.add_column("Details", style="white")
 
     try:
-        # Run all validation steps
         raw_query = _validate_file_format(query_file, table)
         _validate_sort_config(raw_query, table)
 
-        # Validate processed query
         query = Query.from_file(query_file)
         _validate_fields_and_values(query, table)
 
         if not quiet:
             console.print(table)
-
-        console.print("\n[green]Query validation successful! ✓[/green]")
+            console.print("\n[green]Query validation successful! ✓[/green]")
 
         return True, table
 
@@ -288,7 +334,11 @@ def validate(
         if not quiet:
             console.print(table)
             console.print(f"\n[bold red]Validation failed: {err}[/bold red]")
-        raise typer.Exit(code=1) from err
+        # Ensure the original error is re-raised correctly, wrapped in typer.Exit if needed
+        if isinstance(err, typer.Exit):
+            raise err
+        else:
+            raise typer.Exit(code=1) from err
 
 
 def main() -> None:
