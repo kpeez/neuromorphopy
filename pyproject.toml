@@ -28,12 +28,13 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "ruff",
-  "mypy",
-  "ipykernel",
-  "pre-commit",
-  "types-requests",
-  "pandas-stubs",
+    "mypy>=1.15.0",
+    "pandas-stubs>=2.2.3.250308",
+    "pre-commit>=4.2.0",
+    "ruff>=0.11.6",
+    "types-pyyaml>=6.0.12.20250402",
+    "types-requests>=2.32.0.20250328",
+    "types-tqdm>=4.67.0.20250417",
 ]
 docs = [
   "mkdocs",
@@ -45,6 +46,7 @@ docs = [
 
 [project.scripts]
 neuromorpho = "neuromorphopy.cli:main"
+
 [project.urls]
 repository = "https://github.com/kpeez/neuromorphopy"
 documentation = "https://neuromorphopy.readthedocs.io/en/latest/"
