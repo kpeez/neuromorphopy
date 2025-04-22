@@ -32,10 +32,10 @@ pip install git+https://github.com/kpeez/neuromorphopy.git
 
 ### 1. Create a Query File
 
-Create a text file named `query.yml` (or `.json`) with your search criteria:
+Create a text file named `query.yaml` (or `.json`) with your search criteria:
 
 ```yaml
-# query.yml
+# query.yaml
 filters:
   species: ["mouse"]
   brain_region: ["neocortex"]
@@ -48,7 +48,7 @@ sort: # optional
 To download all neurons, use an empty filter set:
 
 ```yaml
-# query_all.yml
+# query_all.yaml
 filters: {}
 ```
 
@@ -69,7 +69,7 @@ neuromorpho fields species
 Before downloading potentially thousands of files, you can preview what your query will match using the `preview` command:
 
 ```bash
-neuromorpho preview -q query.yml
+neuromorpho preview -q query.yaml
 ```
 
 This will validate your query file and show you:
@@ -85,7 +85,7 @@ This command does *not* download any neuron files or create log files.
 Once your query is ready, use the `download` command:
 
 ```bash
-neuromorpho download -q query.yml -o ./my_neurons
+neuromorpho download -q query.yaml -o ./my_neurons
 ```
 
 This will:
@@ -107,25 +107,25 @@ After downloading, you'll have:
 
 ```bash
 # Specify output directory
-neuromorpho download query.yml -o ./my_data
+neuromorpho download query.yaml -o ./my_data
 
 # Change metadata filename
-neuromorpho download query.yml -m neuron_info.csv
+neuromorpho download query.yaml -m neuron_info.csv
 
 # Download fewer neurons concurrently (default 20)
-neuromorpho download query.yml -c 5
+neuromorpho download query.yaml -c 5
 
 # Group downloads by species and brain region
-neuromorpho download query.yml -g species,brain_region
+neuromorpho download query.yaml -g species,brain_region
 
 # See more detailed progress output
-neuromorpho download query.yml --verbose
+neuromorpho download query.yaml --verbose
 
 # Suppress non-error output
-neuromorpho download query.yml --quiet
+neuromorpho download query.yaml --quiet
 
 # Disable writing log file
-neuromorpho download query.yml --no-log
+neuromorpho download query.yaml --no-log
 ```
 
 ## Next Steps

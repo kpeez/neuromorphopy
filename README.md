@@ -2,10 +2,13 @@
 
 [![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://neuromorphopy.readthedocs.io/)
+[![PyPI](https://badge.fury.io/py/neuromorphopy.svg)](https://badge.fury.io/py/neuromorphopy)
 
-Lightweight python package for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
+<p align="left">
+  <img src="https://raw.githubusercontent.com/kpeez/neuromorphopy/main/docs/assets/logo.png" width="350" alt="Neuromorphopy logo">
+</p>
 
-- **Github repository**: <https://github.com/kpeez/neuromorphopy/>
+**neuromorphopy** is a lightweight standalone python CLI tool for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
 
 ## Features
 
@@ -15,11 +18,9 @@ Lightweight python package for downloading neuron morphologies from the [NeuroMo
 - Automatic metadata handling
 - Support for both synchronous and asynchronous operations
 
-## Requirements
-
-- Python >= 3.11
-
 ## Installation
+
+`neuromorphopy` is supported for python >= 3.11.
 
 **Using `uv` (Recommended):**
 
@@ -48,7 +49,7 @@ pip install git+https://github.com/kpeez/neuromorphopy.git
 Create a query file (YAML or JSON) to specify what neurons you want:
 
 ```yaml
-# query.yml
+# query.yaml
 filters:
   species: ["mouse"]
   brain_region: ["neocortex"]
@@ -61,7 +62,7 @@ sort: # sorting is optional
 To download all neurons, you can use an empty query:
 
 ```yaml
-# query.yml
+# query.yaml
 filters: {}
 ```
 
@@ -73,10 +74,10 @@ neuromorpho fields
 neuromorpho fields species
 
 # Preview what a query would download
-neuromorpho preview -q query.yml
+neuromorpho preview -q query.yaml
 
 # Download neurons matching the query
-neuromorpho download -q query.yml -o ./data
+neuromorpho download -q query.yaml -o ./data
 ```
 
 For more detailed usage, see our [documentation](docs/getting_started.md).
