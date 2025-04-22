@@ -2,9 +2,10 @@
 
 [![License](https://img.shields.io/github/license/kpeez/neuromorphopy)](https://img.shields.io/github/license/kpeez/neuromorphopy)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://neuromorphopy.readthedocs.io/)
+[![PyPI](https://badge.fury.io/py/neuromorphopy.svg)](https://badge.fury.io/py/neuromorphopy)
 
 <p align="left">
-  <img src="docs/assets/logo.png" width="350" alt="Neuromorphopy logo">
+  <img src="https://raw.githubusercontent.com/kpeez/neuromorphopy/main/docs/assets/logo.png" width="350" alt="Neuromorphopy logo">
 </p>
 
 **neuromorphopy** is a lightweight standalone python CLI tool for downloading neuron morphologies from the [NeuroMorpho archives](https://neuromorpho.org/).
