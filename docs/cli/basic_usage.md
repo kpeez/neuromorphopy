@@ -23,7 +23,7 @@ neuromorpho fields brain_region
 Validate a query file and see what would be downloaded without actually downloading anything:
 
 ```bash
-neuromorpho preview query.yml
+neuromorpho preview query.yaml
 ```
 
 Options:
@@ -38,7 +38,7 @@ Options:
 Download neurons matching your query:
 
 ```bash
-neuromorpho download query.yml -o ./output
+neuromorpho download query.yaml -o ./output
 ```
 
 Options:
@@ -70,14 +70,14 @@ sort:  # optional
 1. Download mouse pyramidal neurons:
 
     ```yaml
-    # mouse_pyramidal.yml
+    # mouse_pyramidal.yaml
     filters:
       species: ["mouse"]
       cell_type: ["pyramidal"]
     ```
 
     ```bash
-    neuromorpho download mouse_pyramidal.yml -o ./mouse_neurons
+    neuromorpho download mouse_pyramidal.yaml -o ./mouse_neurons
     ```
 
 2. Find available brain regions:
@@ -89,13 +89,13 @@ sort:  # optional
 3. Preview a download with custom metadata filename:
 
     ```bash
-    neuromorpho preview query.yml -o ./data -m neuron_metadata.csv
+    neuromorpho preview query.yaml -o ./data -m neuron_metadata.csv
     ```
 
 4. Download with grouping:
 
     ```bash
-    neuromorpho download query.yml -g species
+    neuromorpho download query.yaml -g species
     ```
 
 ## Next Steps

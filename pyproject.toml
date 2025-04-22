@@ -1,8 +1,8 @@
 [project]
 name = "neuromorphopy"
-version = "0.3.0"
+version = "0.3.1"
 requires-python = ">=3.11"
-description = "Lightweight python package for downloading neuron morphologies from the NeuroMorpho archives."
+description = "Lightweight standalone python CLI tool for downloading neuron morphologies from the NeuroMorpho archives."
 authors = [{ name = "Kyle Puhger", email = "krpuhger@gmail.com" }]
 readme = "README.md"
 license = { file = "LICENSE" }
