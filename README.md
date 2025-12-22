@@ -39,12 +39,14 @@ uv tool install git+https://github.com/kpeez/neuromorphopy.git
 To work on the codebase or run from source:
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/kpeez/neuromorphopy.git
    cd neuromorphopy
    ```
 
 2. Sync dependencies:
+
    ```bash
    uv sync
    # OR using just
@@ -73,6 +75,7 @@ Use the `neuromorpho` command to explore, preview, and download.
 
 **Explore Fields:**
 See what fields and values are available for filtering.
+
 ```bash
 # List all filterable fields
 neuromorpho fields
@@ -83,12 +86,14 @@ neuromorpho fields species
 
 **Preview Download:**
 Check how many neurons match your query without downloading files.
+
 ```bash
 neuromorpho preview query.yaml
 ```
 
 **Download Data:**
 Download the SWC morphology files and metadata.
+
 ```bash
 # Download to default ./neurons directory
 neuromorpho download query.yaml
