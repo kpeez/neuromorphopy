@@ -13,10 +13,12 @@ install:
 
 # run code quality tools
 check:
-  @echo "⚡️ Linting code: Running ruff"
+  @echo "🧹 Formatting code: Running ruff format (check)"
+  @uv run ruff format
+  @echo "⚡️ Linting code: Running ruff check"
   @uv run ruff check .
-  @echo "🧹 Checking code: Running pre-commit"
-  @uv run pre-commit run --all-files
+  @echo "🔎 Type checking: Running ty"
+  @uv run ty check .
 
 # run pytest
 test:
