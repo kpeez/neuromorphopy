@@ -4,9 +4,9 @@ from .api_utils import (
     NEUROMORPHO,
     NEUROMORPHO_API,
     NEURON_INFO,
-    WeakDHAdapter,
     clean_metadata_columns,
     generate_grouped_path,
+    get_neuromorpho_ssl_context,
     request_url_get,
     request_url_post,
 )
