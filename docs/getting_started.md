@@ -4,29 +4,36 @@ This guide will help you get up and running with `neuromorphopy` quickly. neurom
 
 ## Installation
 
-**Using `uv` (Recommended):**
+`neuromorphopy` requires Python 3.11 or later.
 
-The easiest way to install `neuromorphopy` as a standalone CLI tool is with [`uv`](https://github.com/astral-sh/uv):
+### CLI Installation (Recommended)
+
+The best way to install the tool for command-line use is with [`uv`](https://github.com/astral-sh/uv):
 
 ```bash
-# install the latest release
+# Install the latest release
 uv tool install neuromorphopy
-# or install the latest development version from GitHub
+
+# Or install the latest development version from GitHub
 uv tool install git+https://github.com/kpeez/neuromorphopy.git
 ```
 
-**Using `pip`:**
+### Development Installation
 
-Alternatively, you can install `neuromorphopy` into your project environment using `pip`:
+To work on the codebase or run from source:
 
-```bash
-# install the latest release
-pip install neuromorphopy
-# or install the latest development version directly from GitHub
-pip install git+https://github.com/kpeez/neuromorphopy.git
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/kpeez/neuromorphopy.git
+   cd neuromorphopy
+   ```
 
-## Configuration
+2. Sync dependencies:
+   ```bash
+   uv sync
+   # OR using just
+   just install
+   ```
 
 ## Basic Usage
 
@@ -41,8 +48,8 @@ filters:
   brain_region: ["neocortex"]
   cell_type: ["pyramidal"]
 sort: # optional
-  field: "neuron_id"
-  ascending: false
+  field: "brain_region"
+  ascending: true
 ```
 
 To download all neurons, use an empty filter set:
@@ -69,7 +76,7 @@ neuromorpho fields species
 Before downloading potentially thousands of files, you can preview what your query will match using the `preview` command:
 
 ```bash
-neuromorpho preview -q query.yaml
+neuromorpho preview query.yaml
 ```
 
 This will validate your query file and show you:
@@ -85,7 +92,7 @@ This command does *not* download any neuron files or create log files.
 Once your query is ready, use the `download` command:
 
 ```bash
-neuromorpho download -q query.yaml -o ./my_neurons
+neuromorpho download query.yaml -o ./my_neurons
 ```
 
 This will:

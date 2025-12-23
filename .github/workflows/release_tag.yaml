@@ -1,0 +1,79 @@
+name: Tag release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "pyproject.toml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-tag-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tag:
+    name: Create release tag
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Detect version change
+        id: version
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          python - <<'PY'
+          import os
+          import subprocess
+          import tomllib
+
+          def read_version(ref: str) -> str:
+            data = subprocess.check_output(["git", "show", f"{ref}:pyproject.toml"])
+            return tomllib.loads(data.decode())["project"]["version"]
+
+          before = os.environ.get("BEFORE_SHA")
+          current = read_version("HEAD")
+          previous = None
+          if before and before != "0000000000000000000000000000000000000000":
+            try:
+              previous = read_version(before)
+            except subprocess.CalledProcessError:
+              previous = None
+
+          changed = previous != current
+          with open(os.environ["GITHUB_OUTPUT"], "a") as handle:
+            handle.write(f"version={current}\n")
+            handle.write(f"changed={'true' if changed else 'false'}\n")
+
+          print(f"previous={previous} current={current} changed={changed}")
+          PY
+
+      - name: Create tag
+        if: steps.version.outputs.changed == 'true'
+        shell: bash
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          tag="v${version}"
+
+          if git rev-parse -q --verify "refs/tags/${tag}" > /dev/null; then
+            echo "tag ${tag} already exists"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${tag}" -m "Release ${tag}"
+          git push origin "${tag}"
