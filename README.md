@@ -107,4 +107,4 @@ neuromorpho download query.yaml --group-by species,brain_region
 
 ## Documentation
 
-For more detailed usage and API reference, see our [documentation](docs/getting_started.md).
+For more detailed usage, see our [documentation](https://neuromorphopy.readthedocs.io/en/latest/getting_started/).
