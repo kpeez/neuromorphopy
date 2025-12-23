@@ -10,10 +10,9 @@ SSL Configuration:
     3. Multiple layers of SSL verification that need to be disabled
 
     To handle this, we:
-        - Use a custom HTTPAdapter with modified SSL context
-        - Disable certificate verification at multiple levels
+        - Use a custom SSLContext with weaker security settings
+        - Disable certificate verification
         - Configure ciphers to accept weaker DH keys
-        - Suppress insecure connection warnings
 
 Note:
     While disabling SSL verification is generally not recommended, it's necessary
@@ -24,62 +23,51 @@ import ssl
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pandas as pd
-import requests
-import urllib3
-from requests.adapters import HTTPAdapter
-from urllib3.exceptions import InsecureRequestWarning
-from urllib3.poolmanager import PoolManager
-from urllib3.util.ssl_ import create_urllib3_context
 
 NEUROMORPHO = "https://neuromorpho.org"
 NEUROMORPHO_API = "https://neuromorpho.org/api"
 NEURON_INFO = f"{NEUROMORPHO}/neuron_info.jsp?neuron_name="
 
 
-class WeakDHAdapter(HTTPAdapter):
-    def init_poolmanager(
-        self, connections: int, maxsize: int, block: bool = False, **pool_kwargs: Any
-    ) -> PoolManager:
-        context = create_urllib3_context()
-        # disable ALL verification
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        context.set_ciphers("DEFAULT@SECLEVEL=1")
-        pool_kwargs["ssl_context"] = context
-        return super().init_poolmanager(connections, maxsize, block, **pool_kwargs)
+def get_neuromorpho_ssl_context() -> ssl.SSLContext:
+    """Create an SSL context compatible with NeuroMorpho's legacy security settings."""
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    # Allow weak DH keys (SECLEVEL=1)
+    context.set_ciphers("DEFAULT:@SECLEVEL=1")
+    return context
 
 
-# disable SSL verification warnings globally
-urllib3.disable_warnings(InsecureRequestWarning)
-
-# create session with custom adapter
-session = requests.Session()
-session.verify = False
-adapter = WeakDHAdapter()
-session.mount("https://", adapter)
+# create shared client with custom SSL context
+client = httpx.Client(
+    verify=get_neuromorpho_ssl_context(),
+    timeout=60.0,
+    follow_redirects=True,
+)
 
 
-def request_url_get(url: str, **kwargs: Any) -> requests.Response:
+def request_url_get(url: str, **kwargs: Any) -> httpx.Response:
     """Send GET request for a URL."""
-    response = session.get(url, verify=False, **kwargs)
+    response = client.get(url, **kwargs)
     _check_response_validity(response)
     return response
 
 
-def request_url_post(query: dict[str, list[str]], **kwargs: Any) -> requests.Response:
+def request_url_post(query: dict[str, list[str]], **kwargs: Any) -> httpx.Response:
     """Send POST request."""
     url = f"{NEUROMORPHO_API}/neuron/select/"
-    headers = {"Content-Type": "application/json"}
-    kwargs["verify"] = False
-    response = session.post(url, json=query, headers=headers, **kwargs)
+    # httpx automatically sets Content-Type when using json parameter
+    response = client.post(url, json=query, **kwargs)
     _check_response_validity(response)
     return response
 
 
-def _check_response_validity(response: requests.Response) -> None:
+def _check_response_validity(response: httpx.Response) -> None:
     """Check if response is valid."""
-    if not response.ok:
+    if not response.is_success:
         raise ValueError(f"Request failed: {response.status_code} - {response.text}")
 
 

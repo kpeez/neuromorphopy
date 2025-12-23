@@ -1,16 +1,20 @@
 import asyncio
 import logging
-import ssl
 from pathlib import Path
 from typing import Any, Type
 
-import aiohttp
+import httpx
 import pandas as pd
 from tqdm.asyncio import tqdm
 
 from .exceptions import ApiError
 from .io.swc import get_swc_url
-from .utils import NEUROMORPHO_API, clean_metadata_columns, generate_grouped_path
+from .utils import (
+    NEUROMORPHO_API,
+    clean_metadata_columns,
+    generate_grouped_path,
+    get_neuromorpho_ssl_context,
+)
 
 
 class NeuroMorphoClient:
@@ -20,15 +24,22 @@ class NeuroMorphoClient:
         max_connections: int = 100,
     ):
         self.base_url = NEUROMORPHO_API
-        self.ssl_context = ssl.create_default_context()
-        self.ssl_context.set_ciphers("DEFAULT:@SECLEVEL=1")
         self.max_concurrent = max_concurrent
-        self.connector = aiohttp.TCPConnector(
-            limit=max_connections, limit_per_host=max_concurrent, ssl=self.ssl_context
+        # Connection limits
+        self.limits = httpx.Limits(
+            max_connections=max_connections,
+            max_keepalive_connections=max_concurrent,
         )
+        self.ssl_context = get_neuromorpho_ssl_context()
+        self.session: httpx.AsyncClient | None = None
 
     async def __aenter__(self) -> "NeuroMorphoClient":
-        self.session = aiohttp.ClientSession(connector=self.connector)
+        self.session = httpx.AsyncClient(
+            limits=self.limits,
+            verify=self.ssl_context,
+            timeout=60.0,
+            follow_redirects=True,
+        )
         return self
 
     async def __aexit__(
@@ -37,7 +48,15 @@ class NeuroMorphoClient:
         exc_val: BaseException | None,
         exc_tb: Any | None,
     ) -> None:
-        await self.session.close()
+        if self.session:
+            await self.session.aclose()
+
+    @property
+    def client(self) -> httpx.AsyncClient:
+        """Get the underlying httpx AsyncClient."""
+        if self.session is None:
+            raise RuntimeError("Session not initialized. Use 'async with NeuroMorphoClient()'.")
+        return self.session
 
     async def _get_search_details(self, query: dict[str, Any]) -> tuple[str, int, str | None]:
         """Determine endpoint, query string, and total count for a search."""
@@ -60,27 +79,29 @@ class NeuroMorphoClient:
 
         logging.info(f"Fetching total count from {endpoint} with params: {params_count}")
         try:
-            async with self.session.get(endpoint, params=params_count) as response:
-                response.raise_for_status()
-                data = await response.json()
+            response = await self.client.get(endpoint, params=params_count)
+            response.raise_for_status()
+            data = response.json()
 
-                if (
-                    isinstance(data, dict)
-                    and "page" in data
-                    and isinstance(data["page"], dict)
-                    and "totalElements" in data["page"]
-                ):
-                    total = int(data["page"]["totalElements"])
-                    return endpoint, total, query_str
-                else:
-                    error_message = f"Unexpected API response format when fetching count. Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}. Response: {data}"
-                    logging.error(error_message)
-                    raise ApiError(error_message, status_code=response.status)
+            if (
+                isinstance(data, dict)
+                and "page" in data
+                and isinstance(data["page"], dict)
+                and "totalElements" in data["page"]
+            ):
+                total = int(data["page"]["totalElements"])
+                return endpoint, total, query_str
+            else:
+                error_message = f"Unexpected API response format when fetching count. Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}. Response: {data}"
+                logging.error(error_message)
+                raise ApiError(error_message, status_code=response.status_code)
 
-        except aiohttp.ClientResponseError as e:
+        except httpx.HTTPStatusError as e:
             # catch HTTP errors specifically to include status code
-            logging.error(f"HTTP Error fetching total count: {e.status} - {e.message}")
-            raise ApiError(f"HTTP Error: {e.status} - {e.message}", status_code=e.status) from e
+            logging.error(f"HTTP Error fetching total count: {e.response.status_code} - {e}")
+            raise ApiError(
+                f"HTTP Error: {e.response.status_code} - {e}", status_code=e.response.status_code
+            ) from e
         except Exception as e:
             logging.error(f"Error fetching total count: {e!s}")
             raise
@@ -93,11 +114,11 @@ class NeuroMorphoClient:
         if query_str is not None:
             params["q"] = query_str
 
-        async with self.session.get(endpoint, params=params) as response:
-            response.raise_for_status()
-            data = await response.json()
+        response = await self.client.get(endpoint, params=params)
+        response.raise_for_status()
+        data = response.json()
 
-            return data.get("_embedded", {}).get("neuronResources", [])
+        return data.get("_embedded", {}).get("neuronResources", [])
 
     async def search_neurons(
         self,
@@ -211,13 +232,12 @@ class NeuroMorphoClient:
 
                 try:
                     # use the shared session from the client
-                    async with self.session.get(
-                        await self.get_swc_url(name), ssl=self.ssl_context
-                    ) as response:
-                        response.raise_for_status()
-                        content = await response.text()
-                        output_path.write_text(content)
-                        logger.info(f"Downloaded {name} to {output_path}")
+                    url = await self.get_swc_url(name)
+                    response = await self.client.get(url)
+                    response.raise_for_status()
+                    content = response.text
+                    output_path.write_text(content)
+                    logger.info(f"Downloaded {name} to {output_path}")
                 except Exception as e:
                     logger.error(f"Error downloading {name}: {e}")
 

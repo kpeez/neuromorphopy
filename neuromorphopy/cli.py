@@ -45,10 +45,10 @@ async def _preview_download(
             params_sample["sort"] = f"{sort_info['field']},{sort_info['order']}"
 
         try:
-            async with client.session.get(endpoint, params=params_sample) as response:
-                response.raise_for_status()
-                data = await response.json()
-                sample = data.get("_embedded", {}).get("neuronResources", [])
+            response = await client.client.get(endpoint, params=params_sample)
+            response.raise_for_status()
+            data = response.json()
+            sample = data.get("_embedded", {}).get("neuronResources", [])
         except Exception as e:
             console.print(f"[bold red]Error fetching sample during preview:[/] {e}")
             sample = []  # Set sample to empty list on error

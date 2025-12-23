@@ -1,6 +1,6 @@
 [project]
 name = "neuromorphopy"
-version = "0.3.2"
+version = "0.3.3"
 requires-python = ">=3.11"
 description = "Lightweight standalone python CLI tool for downloading neuron morphologies from the NeuroMorpho archives."
 authors = [{ name = "Kyle Puhger", email = "krpuhger@gmail.com" }]
@@ -17,24 +17,22 @@ classifiers = [
 ]
 keywords = ["neuroscience", "morphology", "neurons", "neuromorpho"]
 dependencies = [
-    "aiohttp>=3.11.18",
+    "httpx>=0.28.1",
     "pandas>=2.2.3",
     "pydantic>=2.11.3",
     "pyyaml>=6.0.2",
-    "requests>=2.32.3",
     "tqdm>=4.67.1",
     "typer>=0.15.2",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=1.15.0",
     "pandas-stubs>=2.2.3.250308",
     "pre-commit>=4.2.0",
+    "pytest-asyncio>=0.23.5",
+    "pytest-mock>=3.12.0",
     "ruff>=0.11.6",
-    "types-pyyaml>=6.0.12.20250402",
-    "types-requests>=2.32.0.20250328",
-    "types-tqdm>=4.67.0.20250417",
+    "ty>=0.0.5",
 ]
 docs = [
   "mkdocs",
@@ -100,26 +98,9 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-[tool.mypy]
-files = ["neuromorphopy"]
-disallow_untyped_defs = true
-disallow_any_unimported = true
-no_implicit_optional = true
-check_untyped_defs = true
-warn_return_any = false
-warn_unused_ignores = true
-show_error_codes = true
-exclude = [
-    '\.venv',
-    'tests'
-]
+[tool.ty.environment]
+python-version = "3.11"
 
-[[tool.mypy.overrides]]
-module = ["neuromorpho_api"]
-ignore_missing_imports = true
-warn_return_any = false
-disallow_any_unimported = false
-disable_error_code = "attr-defined"
-
-
+[tool.ty.src]
+include = ["neuromorphopy"]
 
