@@ -28,11 +28,11 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pandas-stubs>=2.2.3.250308",
-    "pre-commit>=4.2.0",
+    "prek>=0.4.11",
     "pytest-asyncio>=0.23.5",
     "pytest-mock>=3.12.0",
-    "ruff>=0.11.6",
-    "ty>=0.0.5",
+    "ruff>=0.16.0",
+    "ty>=0.0.63",
 ]
 docs = [
   "mkdocs",
@@ -65,29 +65,10 @@ line-length = 100
 target-version = "py310"
 
 [tool.ruff.lint]
-select = [
-  "E",   # pycodestyle
-  "W",
-  "F",   # pyflakes
-  "PL",  # pylint
-  "I",   # isort
-  "B",   # flake8-bugbear
-  "SIM", # flake8-simplify
-  "C4",  # flake8-comprehensions
-  "RUF", # ruff
-]
 fixable = ["ALL"]
-ignore = [
-  "PLR0913", # too many arguments
-  "PLR0914", # too many local variables
-  "PLR0917", # too many positional arguments
-  "PLR2004", # magic number
-  "PLW2901", # for loop variable overwritten by assignment target
-  "E501",    # line too long
-]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402", "F401", "D104"]
+"__init__.py" = ["F401"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
