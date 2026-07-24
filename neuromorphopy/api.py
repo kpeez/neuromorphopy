@@ -1,7 +1,7 @@
 import asyncio
-import logging
 from pathlib import Path
-from typing import Any, Type
+from types import TracebackType
+from typing import Any, Self
 
 import httpx
 import pandas as pd
@@ -13,8 +13,11 @@ from .utils import (
     NEUROMORPHO_API,
     clean_metadata_columns,
     generate_grouped_path,
+    get_logger,
     get_neuromorpho_ssl_context,
 )
+
+logger = get_logger()
 
 
 class NeuroMorphoClient:
@@ -33,7 +36,7 @@ class NeuroMorphoClient:
         self.ssl_context = get_neuromorpho_ssl_context()
         self.session: httpx.AsyncClient | None = None
 
-    async def __aenter__(self) -> "NeuroMorphoClient":
+    async def __aenter__(self) -> Self:
         self.session = httpx.AsyncClient(
             limits=self.limits,
             verify=self.ssl_context,
@@ -44,9 +47,9 @@ class NeuroMorphoClient:
 
     async def __aexit__(
         self,
-        exc_type: Type[BaseException] | None,
+        exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: Any | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         if self.session:
             await self.session.aclose()
@@ -77,7 +80,7 @@ class NeuroMorphoClient:
         if sort_info:
             params_count["sort"] = f"{sort_info['field']},{sort_info['order']}"
 
-        logging.info(f"Fetching total count from {endpoint} with params: {params_count}")
+        logger.info(f"Fetching total count from {endpoint} with params: {params_count}")
         try:
             response = await self.client.get(endpoint, params=params_count)
             response.raise_for_status()
@@ -92,18 +95,22 @@ class NeuroMorphoClient:
                 total = int(data["page"]["totalElements"])
                 return endpoint, total, query_str
             else:
-                error_message = f"Unexpected API response format when fetching count. Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}. Response: {data}"
-                logging.error(error_message)
+                keys = list(data.keys()) if isinstance(data, dict) else "Not a dict"
+                error_message = (
+                    "Unexpected API response format when fetching count. "
+                    f"Keys: {keys}. Response: {data}"
+                )
+                logger.error(error_message)
                 raise ApiError(error_message, status_code=response.status_code)
 
         except httpx.HTTPStatusError as e:
             # catch HTTP errors specifically to include status code
-            logging.error(f"HTTP Error fetching total count: {e.response.status_code} - {e}")
+            logger.error(f"HTTP Error fetching total count: {e.response.status_code} - {e}")
             raise ApiError(
                 f"HTTP Error: {e.response.status_code} - {e}", status_code=e.response.status_code
             ) from e
         except Exception as e:
-            logging.error(f"Error fetching total count: {e!s}")
+            logger.error(f"Error fetching total count: {e!s}")
             raise
 
     async def _fetch_page(
@@ -146,7 +153,7 @@ class NeuroMorphoClient:
         # get endpoint, total count, and query string using the helper method
         try:
             endpoint, total, query_str = await self._get_search_details(query)
-        except Exception:
+        except Exception:  # noqa: BLE001 - already-logged helper errors must not abort search
             return []  # error already logged in helper
 
         if total == 0:
@@ -215,7 +222,6 @@ class NeuroMorphoClient:
         async def download_one(neuron: dict[str, Any]) -> None:
             async with download_semaphore:
                 name = neuron["neuron_name"]
-                logger = logging.getLogger("neuromorphopy")
 
                 # generate target path based on grouping
                 if group_by:
@@ -238,7 +244,7 @@ class NeuroMorphoClient:
                     content = response.text
                     output_path.write_text(content)
                     logger.info(f"Downloaded {name} to {output_path}")
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001 - per-neuron download must not abort batch
                     logger.error(f"Error downloading {name}: {e}")
 
         tasks = [download_one(n) for n in neurons]

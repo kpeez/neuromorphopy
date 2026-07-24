@@ -1,8 +1,6 @@
 class NeuroMorphoError(Exception):
     """Base exception for NeuroMorpho-related errors"""
 
-    pass
-
 
 class ApiError(NeuroMorphoError):
     """API request errors"""
@@ -14,5 +12,3 @@ class ApiError(NeuroMorphoError):
 
 class ValidationError(NeuroMorphoError):
     """Data validation errors"""
-
-    pass

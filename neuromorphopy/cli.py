@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Command line interface for neuromorphopy."""
 
 import asyncio
@@ -49,7 +48,7 @@ async def _preview_download(
             response.raise_for_status()
             data = response.json()
             sample = data.get("_embedded", {}).get("neuronResources", [])
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - sample fetch is best-effort for the preview
             console.print(f"[bold red]Error fetching sample during preview:[/] {e}")
             sample = []  # Set sample to empty list on error
 
@@ -155,7 +154,7 @@ def preview(
     except Exception as err:
         if not isinstance(err, typer.Exit):
             raise typer.Exit(code=1) from err
-        raise err
+        raise
 
 
 @app.command("download")
@@ -253,7 +252,7 @@ def _validate_file_format(query_file: Path, table: Table) -> dict:
 
     if not isinstance(raw_query, dict):
         table.add_row("File Format", "✗", "Query must be a dictionary")
-        raise ValueError("Query must be a dictionary")
+        raise TypeError("Query must be a dictionary")
 
     if "filters" not in raw_query:
         table.add_row("Query Structure", "✗", "No filters specified")
@@ -336,7 +335,7 @@ def validate(
             console.print(f"\n[bold red]Validation failed: {err}[/bold red]")
         # Ensure the original error is re-raised correctly, wrapped in typer.Exit if needed
         if isinstance(err, typer.Exit):
-            raise err
+            raise
         else:
             raise typer.Exit(code=1) from err
 
