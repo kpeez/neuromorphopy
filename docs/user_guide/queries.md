@@ -41,11 +41,13 @@ You can build queries programmatically using method chaining:
 ```python
 from neuromorphopy import Query
 
-query = (Query()
-         .filter("species", ["mouse"])
-         .filter("brain_region", ["neocortex"])
-         .filter("cell_type", ["pyramidal"])
-         .sort("brain_region", ascending=True))
+query = (
+    Query()
+    .filter("species", ["mouse"])
+    .filter("brain_region", ["neocortex"])
+    .filter("cell_type", ["pyramidal"])
+    .sort("brain_region", ascending=True)
+)
 ```
 
 ## Field Validation
@@ -80,8 +82,9 @@ You can sort query results by any valid field:
 
 ```python
 query = Query()
-query.filter("species", ["mouse"]) \
-     .sort("brain_region", ascending=True)  # ascending is optional, defaults to True
+query.filter("species", ["mouse"]).sort(
+    "brain_region", ascending=True
+)  # ascending is optional, defaults to True
 ```
 
 ## Query Composition
