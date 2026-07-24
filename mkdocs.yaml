@@ -1,6 +1,6 @@
 site_name: neuromorphopy
 repo_url: https://github.com/kpeez/neuromorphopy
-site_url: https://kpeez.github.io/neuromorphopy
+site_url: https://neuromorphopy.readthedocs.io/
 site_description: Lightweight python package for downloading neuron morphologies from the NeuroMorpho archive.
 site_author: Kyle Puhger
 
@@ -17,6 +17,8 @@ nav:
       - Client: api/client.md
       - NeuroMorpho Queries: api/query.md
       - Utilities: api/utils.md
+  - Development:
+      - Releasing: development/releasing.md
 
 theme:
   name: material
