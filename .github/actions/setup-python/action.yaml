@@ -1,15 +1,11 @@
 name: "Setup Python Environment"
-description: "Set up Python, uv, and install project dependencies (lockfile-true)"
+description: "Set up uv with a managed Python and install project dependencies (lockfile-true)"
 
 inputs:
   python-version:
     description: "Python version"
     required: true
     default: "3.13"
-  uv-version:
-    description: "uv version"
-    required: true
-    default: "0.9.18"
   install-args:
     description: "Extra args for uv sync (e.g., --group ci)"
     required: false
@@ -18,14 +14,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v5
+    - name: Install uv
+      uses: astral-sh/setup-uv@v9.0.0
       with:
         python-version: ${{ inputs.python-version }}
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v6
-      with:
-        version: ${{ inputs.uv-version }}
         enable-cache: true
         cache-suffix: ${{ inputs.python-version }}
 

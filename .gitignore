@@ -1,6 +1,6 @@
 # datasets/docs
-slurm
 data
+docs/agents
 *.csv
 *.log
 

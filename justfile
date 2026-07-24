@@ -9,7 +9,7 @@ install:
   @echo "📦 Creating virtual environment"
   @uv sync --all-extras --locked --python=3.13
   @echo "🛠️ Installing developer tools..."
-  @uv run pre-commit install
+  @uv run prek install
 
 # run code quality tools
 check:
@@ -38,7 +38,7 @@ docs-test:
 update:
   @echo "⚙️ Updating dependencies and pre-commit hooks"
   @uv lock --upgrade
-  @uv run pre-commit autoupdate
+  @uv run prek autoupdate
 
 # list all commands
 help:
