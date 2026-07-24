@@ -153,7 +153,7 @@ class NeuroMorphoClient:
         # get endpoint, total count, and query string using the helper method
         try:
             endpoint, total, query_str = await self._get_search_details(query)
-        except Exception:
+        except Exception:  # noqa: BLE001 - already-logged helper errors must not abort search
             return []  # error already logged in helper
 
         if total == 0:
@@ -244,7 +244,7 @@ class NeuroMorphoClient:
                     content = response.text
                     output_path.write_text(content)
                     logger.info(f"Downloaded {name} to {output_path}")
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001 - per-neuron download must not abort batch
                     logger.error(f"Error downloading {name}: {e}")
 
         tasks = [download_one(n) for n in neurons]

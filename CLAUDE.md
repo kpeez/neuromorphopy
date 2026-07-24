@@ -44,9 +44,12 @@ configures a named `neuromorphopy` logger, so a bare `logging.info(...)` bypasse
 `--verbose`, `--quiet`, and `--log-to-file` flags entirely. Ruff's `LOG` rules are selected to
 catch this; `tests/test_logging.py` guards it.
 
-**`[tool.ruff.lint] select` is pinned deliberately.** Ruff changes its implicit default rule set
-between releases — leaving `select` unset once turned a routine version bump into 22 new
-failures. Do not delete it; change it consciously.
+**Lint follows ruff's default rule set — no `select` list.** This is deliberate: the project
+tracks current ruff defaults rather than a frozen snapshot. The tradeoff is that a ruff upgrade
+can surface new rules (the 0.11 → 0.16 bump surfaced 22), so treat `just update` as a change that
+may need code fixes, not a no-op bump. Fix what it reports; reach for a rule-specific `# noqa:
+RULE - reason` only where the flagged behavior is genuinely intended, as with the deliberately
+broad `except Exception` guards that keep one failed neuron from aborting a batch download.
 
 **Hooks run under `prek`, not `pre-commit`.** The dev dependency is `prek`; `uv run pre-commit`
 will fail. `.pre-commit-config.yaml` is still the config file — that is prek's format too.

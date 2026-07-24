@@ -67,8 +67,6 @@ line-length = 100
 target-version = "py311"
 
 [tool.ruff.lint]
-# Pinned explicitly: ruff's implicit default rule set changes between releases.
-select = ["E", "W", "F", "I", "N", "UP", "B", "C4", "SIM", "PT", "RUF", "TC", "PIE", "LOG", "PYI"]
 fixable = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]

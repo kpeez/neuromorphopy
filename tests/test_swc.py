@@ -67,7 +67,7 @@ def test_download_neuron_data_writes_file(mocker, tmp_path):
 
 def test_download_swc_data_skips_existing(mocker, tmp_path):
     # Setup: Create an existing file
-    dirname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M-swc_files")
+    dirname = datetime.datetime.now().astimezone().strftime("%Y_%m_%d_%H_%M-swc_files")
     download_dir = tmp_path / dirname
     download_dir.mkdir(parents=True)
     (download_dir / "existing.swc").touch()

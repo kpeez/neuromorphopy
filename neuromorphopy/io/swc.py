@@ -77,7 +77,7 @@ def download_neuron_data(neuron: str, download_path: Path) -> str:
             file.write(f"# {header}\n")
         swc_data.to_csv(file_path, mode="a", index=False, sep=" ", header=False)
         return f"Downloaded {neuron}"
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - per-neuron download must not abort the batch
         return f"Error downloading {neuron}: {e}"
 
 
@@ -92,7 +92,7 @@ def download_swc_data(
         download_dir (str | Path | None): Path to download swc data to. If None, will download to
         current working directory. Defaults to None.
     """
-    download_dirname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M-swc_files")
+    download_dirname = datetime.datetime.now().astimezone().strftime("%Y_%m_%d_%H_%M-swc_files")
     download_path = (
         Path.cwd() / download_dirname
         if not download_dir
