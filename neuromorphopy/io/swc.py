@@ -6,15 +6,11 @@ import re
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pandas as pd
 from tqdm import tqdm
 
 from neuromorphopy.utils import NEUROMORPHO, NEURON_INFO, request_url_get
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 
 def get_swc_url(neuron_name: str) -> str:
